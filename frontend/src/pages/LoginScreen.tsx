@@ -1,0 +1,237 @@
+import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { Link } from 'react-router-dom'; 
+
+const API_URL = 'http://localhost:5000/users';
+
+interface LoginFormData {
+    username: string;
+    password: string;
+}
+
+interface UserDto {
+    id: number;
+    name: string;
+    email: string;
+    password: string; 
+    role: 'admin' | 'user';
+}
+
+
+interface InputFieldProps {
+    label: string;
+    name: keyof LoginFormData;
+    type?: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const InputField: React.FC<InputFieldProps> = 
+    ({ label, name, type = 'text', value, onChange }) => (
+    <div style={styles.inputGroup}>
+        <label htmlFor={name} style={styles.label}>{label}</label>
+        <input
+            id={name}
+            type={type}
+            name={name}
+            value={value}
+            onChange={onChange}
+            style={styles.input}
+            required
+        />
+    </div>
+);
+
+
+const LoginScreen: React.FC = () => {
+    const [formData, setFormData] = useState<LoginFormData>({ username: '', password: '' });
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState('');
+    const { login, isAuthenticated, user } = useAuth();
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name as keyof LoginFormData]: value }));
+    };
+
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setMessage('');
+
+        const { username, password } = formData;
+
+        try {
+            const response = await fetch(API_URL);
+
+            if (!response.ok) {
+                setMessage('Erro na comunicação com o servidor. Status: ' + response.status);
+                setLoading(false);
+                return;
+            }
+
+            const users: UserDto[] = await response.json();
+
+            const foundUser = users.find(user => 
+                user.name === username && user.password === password
+            );
+
+            if (foundUser) {
+                setMessage('Login realizado com sucesso!');
+                
+                login({ 
+                    id: foundUser.id, 
+                    name: foundUser.name, 
+                    email: foundUser.email,
+                    type: foundUser.role
+                });
+            } else {
+                setMessage('Falha no login: Usuário ou senha incorretos.');
+            }
+
+        } catch (error) {
+            console.error('Erro de rede ou processamento:', error);
+            setMessage('Erro de conexão ou processamento de dados.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    if (user) {
+        return (
+            <div style={{ ...styles.container, ...styles.centerContent }}>
+                <h1 style={{ color: user.type === 'admin' ? '#FF0000' : '#00AA00' }}>
+                    {user.type === 'admin' ? 'Página do Administrador' : 'Página do Usuário'}
+                </h1>
+                <button 
+                    onClick={() => window.location.reload()} 
+                    style={{ ...styles.signInButton, marginTop: '20px', backgroundColor: '#555' }}
+                >
+                    Voltar ao Login
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div style={{ ...styles.container, ...styles.centerContent }}>
+            <div style={styles.logoContainer}>
+                <img src="/logo-azul.png" alt="Aurora Airlines Logo" style={styles.logo} />
+            </div>
+
+            <form onSubmit={handleLogin} style={styles.form}>
+                <InputField 
+                    label="Username" 
+                    name="username" 
+                    value={formData.username} 
+                    onChange={handleChange} 
+                />
+                <InputField 
+                    label="Password" 
+                    name="password" 
+                    type="password" 
+                    value={formData.password} 
+                    onChange={handleChange} 
+                />
+
+                {message && <p style={{ color: message.startsWith('Falha') ? 'red' : 'green', marginTop: '20px' }}>{message}</p>}
+                
+                <button type="submit" disabled={loading} style={styles.signInButton}>
+                    {loading ? 'Carregando...' : 'Sign in'}
+                </button>
+            </form>
+            
+            <div style={styles.registerLinkContainer}>
+                <span style={styles.text}>Don't have an account?</span>
+                <Link to="/register" style={styles.registerLink}>
+                    Register here
+                </Link>
+            </div>
+        </div>
+    );
+};
+
+
+const styles: { [key: string]: React.CSSProperties } = {
+    container: {
+        minHeight: '100vh',
+        backgroundColor: 'white',
+        color: '#00254A',
+    },
+    centerContent: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '50px 20px',
+    },
+    logoContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginBottom: '50px',
+    },
+    logo: {
+        width: '120px', 
+        height: 'auto',
+        marginBottom: '10px',
+    },
+    logoText: {
+        fontSize: '18px',
+        fontWeight: 'bold',
+        letterSpacing: '3px',
+        margin: '0',
+    },
+    form: {
+        width: '100%',
+        maxWidth: '350px',
+    },
+    inputGroup: {
+        marginBottom: '25px',
+    },
+    label: {
+        display: 'block',
+        marginBottom: '8px',
+        fontSize: '16px',
+        fontWeight: '500',
+    },
+    input: {
+        width: '100%',
+        padding: '12px',
+        border: '1px solid #ccc',
+        borderRadius: '5px',
+        boxSizing: 'border-box',
+        fontSize: '16px',
+    },
+    signInButton: {
+        width: '100%',
+        backgroundColor: '#00254A', 
+        color: 'white',
+        padding: '15px',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontSize: '18px',
+        marginTop: '30px',
+        fontWeight: 'bold',
+        transition: 'background-color 0.3s',
+    },
+    registerLinkContainer: {
+        marginTop: '30px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    text: {
+        color: '#555',
+        marginBottom: '5px',
+    },
+    registerLink: {
+        color: '#00254A',
+        textDecoration: 'underline',
+        fontWeight: 'bold',
+    }
+};
+
+export default LoginScreen;
