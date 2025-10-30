@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Link } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom'; 
 
 const API_URL = 'http://localhost:5000/users';
 
@@ -48,12 +48,23 @@ const LoginScreen: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const { login, isAuthenticated, user } = useAuth();
+    const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name as keyof LoginFormData]: value }));
     };
 
+    useEffect(() => {
+        if (user) {
+            if (user.type === 'admin') {
+                navigate('/admin/employees', { replace: true });
+            } else {
+                navigate('/home', { replace: true }); 
+            }
+        }
+    }, [user, navigate]);
+    
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -98,21 +109,7 @@ const LoginScreen: React.FC = () => {
     };
 
 
-    if (user) {
-        return (
-            <div style={{ ...styles.container, ...styles.centerContent }}>
-                <h1 style={{ color: user.type === 'admin' ? '#FF0000' : '#00AA00' }}>
-                    {user.type === 'admin' ? 'Página do Administrador' : 'Página do Usuário'}
-                </h1>
-                <button 
-                    onClick={() => window.location.reload()} 
-                    style={{ ...styles.signInButton, marginTop: '20px', backgroundColor: '#555' }}
-                >
-                    Voltar ao Login
-                </button>
-            </div>
-        );
-    }
+    
 
     return (
         <div style={{ ...styles.container, ...styles.centerContent }}>
