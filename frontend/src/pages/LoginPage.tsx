@@ -19,28 +19,29 @@ interface UserDto {
 
 
 interface InputFieldProps {
-    label: string;
-    name: keyof LoginFormData;
-    type?: string;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+ label: string;
+ name: keyof LoginFormData; 
+ type?: string;
+ value: string;
+ onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const InputField: React.FC<InputFieldProps> = 
-    ({ label, name, type = 'text', value, onChange }) => (
-    <div style={styles.inputGroup}>
-        <label htmlFor={name} style={styles.label}>{label}</label>
-        <input
-            id={name}
-            type={type}
-            name={name}
-            value={value}
-            onChange={onChange}
-            style={styles.input}
-            required
-        />
-    </div>
+ ({ label, name, type = 'text', value, onChange }) => ( 
+ <div style={styles.inputGroup}>
+ <label htmlFor={name} style={styles.label}>{label}</label>
+ <input
+ id={name} 
+ type={type}
+ name={name}
+ value={value}
+ onChange={onChange}
+ style={styles.input}
+ required
+ />
+ </div>
 );
+
 
 
 const LoginScreen: React.FC = () => {
@@ -76,7 +77,7 @@ const LoginScreen: React.FC = () => {
             const response = await fetch(API_URL);
 
             if (!response.ok) {
-                setMessage('Erro na comunicação com o servidor. Status: ' + response.status);
+                setMessage('Error in communication with the server. Status:' + response.status);
                 setLoading(false);
                 return;
             }
@@ -84,11 +85,11 @@ const LoginScreen: React.FC = () => {
             const users: UserDto[] = await response.json();
 
             const foundUser = users.find(user => 
-                user.name === email && user.password === password
+                user.email === email && user.password === password
             );
 
             if (foundUser) {
-                setMessage('Login realizado com sucesso!');
+                setMessage('Login successful!');
                 
                 login({ 
                     id: foundUser.id, 
@@ -97,12 +98,12 @@ const LoginScreen: React.FC = () => {
                     type: foundUser.role
                 });
             } else {
-                setMessage('Falha no login: Usuário ou senha incorretos.');
+                setMessage('Login failure: Incorrect user or password.');
             }
 
         } catch (error) {
-            console.error('Erro de rede ou processamento:', error);
-            setMessage('Erro de conexão ou processamento de dados.');
+            console.error('Network or processing error:', error);
+            setMessage('Connection or data processing error.');
         } finally {
             setLoading(false);
         }
@@ -132,10 +133,10 @@ const LoginScreen: React.FC = () => {
                     onChange={handleChange} 
                 />
 
-                {message && <p style={{ color: message.startsWith('Falha') ? 'red' : 'green', marginTop: '20px' }}>{message}</p>}
+                {message && <p style={{ color: message.startsWith('Fail') ? 'red' : 'green', marginTop: '20px' }}>{message}</p>}
                 
                 <button type="submit" disabled={loading} style={styles.signInButton}>
-                    {loading ? 'Carregando...' : 'Sign in'}
+                    {loading ? 'Loading...' : 'Sign in'}
                 </button>
             </form>
             

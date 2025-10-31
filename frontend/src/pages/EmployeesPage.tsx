@@ -3,20 +3,21 @@ import axios from 'axios';
 import AddEmployeeModal from '../components/addModal';
 import UpdateEmployeeModal from '../components/updateModal';
 import { API_BASE_URL, Employee } from '../constants';
+import Navbar from "../components/layouts/navbar"; 
+import PageContainer from "../components/layouts/pageContainer"; 
+import SectionHeader from "../components/layouts/sectionHeader"; 
+import { AdminTabs } from "../components/layouts/adminTabs"; 
 
 const EmployeesPage: React.FC = () => {
-    // Tipagem do estado de lista e do funcionário selecionado
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState<boolean>(false);
     const [employeeToUpdate, setEmployeeToUpdate] = useState<Employee | null>(null);
 
-    // Função para buscar a lista de funcionários
     const fetchEmployees = async () => {
         setIsLoading(true);
         try {
-            // Define o tipo de dado esperado na resposta do GET
             const response = await axios.get<Employee[]>(API_BASE_URL); 
             setEmployees(response.data);
         } catch (error) {
@@ -31,13 +32,11 @@ const EmployeesPage: React.FC = () => {
         fetchEmployees();
     }, []);
 
-    // Lida com a abertura do modal de edição
     const handleEdit = (employee: Employee) => {
         setEmployeeToUpdate(employee);
         setIsUpdateModalOpen(true);
     };
 
-    // Lida com a exclusão do funcionário (DELETE /employees/:id)
     const handleDelete = async (id: number, name: string) => {
         if (!window.confirm(`Tem certeza que deseja deletar o funcionário ${name}?`)) {
             return;
@@ -45,7 +44,7 @@ const EmployeesPage: React.FC = () => {
         try {
             await axios.delete(`${API_BASE_URL}/${id}`);
             alert(`Funcionário ${name} deletado com sucesso!`);
-            fetchEmployees(); // Recarrega a lista
+            fetchEmployees(); 
         } catch (error) {
             console.error('Erro ao deletar funcionário:', error);
             alert('Erro ao deletar funcionário. Verifique o console.');
@@ -53,127 +52,101 @@ const EmployeesPage: React.FC = () => {
     };
 
     if (isLoading) {
-        return <div style={pageStyles.loading}>Carregando funcionários...</div>;
+        return (
+             <div className="min-h-screen bg-gray-50">
+                 <Navbar />
+                 <div style={loadingStyles}>Carregando funcionários...</div>
+             </div>
+        );
     }
 
     return (
-        <div style={pageStyles.container}>
-            
-            {/* Cabeçalho da Página e Botão Adicionar */}
-            <div style={pageStyles.header}>
-                <h1 style={pageStyles.title}>Employees</h1>
-                <button
-                    onClick={() => setIsAddModalOpen(true)}
-                    style={pageStyles.addButton}
-                >
-                    Add new employee
-                </button>
-            </div>
+        <div className="min-h-screen bg-gray-50">
+            <Navbar />
+            <AdminTabs /> 
+            <PageContainer>
+                
+                <SectionHeader 
+                    title="Employees" 
+                    buttonText="Add new employee" 
+                    onButtonClick={() => setIsAddModalOpen(true)} 
+                />
 
-            {/* Listagem de Funcionários */}
-            <div style={pageStyles.listContainer}>
-                {employees.length === 0 ? (
-                    <p>Nenhum funcionário cadastrado.</p>
-                ) : (
-                    employees.map(employee => (
-                        // A tipagem garante que 'employee' tem a estrutura de 'Employee'
-                        <div key={employee.id} style={cardStyles.card}>
-                            <div style={cardStyles.dataGroup}>
-                                <p style={cardStyles.dataLabel}>**Name:**</p>
-                                <p style={cardStyles.dataValue}>{employee.name}</p>
-                            </div>
-                            <div style={cardStyles.dataGroup}>
-                                <p style={cardStyles.dataLabel}>**Birthday:**</p>
-                                <p style={cardStyles.dataValue}>{employee.birthday}</p>
-                            </div>
-                            <div style={cardStyles.dataGroup}>
-                                <p style={cardStyles.dataLabel}>**E-mail:**</p>
-                                <p style={cardStyles.dataValue}>{employee.email}</p>
-                            </div>
-                            <div style={cardStyles.dataGroup}>
-                                <p style={cardStyles.dataLabel}>**Phone:**</p>
-                                <p style={cardStyles.dataValue}>{employee.phoneNumber}</p>
-                            </div>
-                            <div style={cardStyles.dataGroup}>
-                                <p style={cardStyles.dataLabel}>**Category:**</p>
-                                <p style={cardStyles.dataValue}>{employee.category}</p>
-                            </div>
+                <div style={listContainerStyles}>
+                    {employees.length === 0 ? (
+                        <p>Nenhum funcionário cadastrado.</p>
+                    ) : (
+                        employees.map(employee => (
+                            <div key={employee.id} style={cardStyles.card}>
+                                <div style={cardStyles.dataGroup}>
+                                    <p style={cardStyles.dataLabel}>**Name:**</p>
+                                    <p style={cardStyles.dataValue}>{employee.name}</p>
+                                </div>
+                                <div style={cardStyles.dataGroup}>
+                                    <p style={cardStyles.dataLabel}>**Birthday:**</p>
+                                    <p style={cardStyles.dataValue}>{employee.birthday}</p>
+                                </div>
+                                <div style={cardStyles.dataGroup}>
+                                    <p style={cardStyles.dataLabel}>**E-mail:**</p>
+                                    <p style={cardStyles.dataValue}>{employee.email}</p>
+                                </div>
+                                <div style={cardStyles.dataGroup}>
+                                    <p style={cardStyles.dataLabel}>**Phone:**</p>
+                                    <p style={cardStyles.dataValue}>{employee.phoneNumber}</p>
+                                </div>
+                                <div style={cardStyles.dataGroup}>
+                                    <p style={cardStyles.dataLabel}>**Category:**</p>
+                                    <p style={cardStyles.dataValue}>{employee.category}</p>
+                                </div>
 
-                            {/* Ícones de Ação */}
-                            <div style={cardStyles.actions}>
-                                <span 
-                                    onClick={() => handleEdit(employee)} 
-                                    style={cardStyles.icon}
-                                    title="Editar"
-                                >
-                                    ✏️ 
-                                </span>
-                                <span 
-                                    onClick={() => handleDelete(employee.id, employee.name)} 
-                                    style={{...cardStyles.icon, color: 'red'}}
-                                    title="Deletar"
-                                >
-                                    🗑️ 
-                                </span>
+                                <div style={cardStyles.actions}>
+                                    <span 
+                                        onClick={() => handleEdit(employee)} 
+                                        style={cardStyles.icon}
+                                        title="Editar"
+                                    >
+                                        ✏️ 
+                                    </span>
+                                    <span 
+                                        onClick={() => handleDelete(employee.id, employee.name)} 
+                                        style={{...cardStyles.icon, color: 'red'}}
+                                        title="Deletar"
+                                    >
+                                        🗑️ 
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    ))
-                )}
-            </div>
+                        ))
+                    )}
+                </div>
 
-            {/* Modais */}
-            <AddEmployeeModal
-                isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
-                onEmployeeAdded={fetchEmployees}
-            />
-            <UpdateEmployeeModal
-                isOpen={isUpdateModalOpen}
-                onClose={() => setIsUpdateModalOpen(false)}
-                employeeToUpdate={employeeToUpdate}
-                onEmployeeUpdated={fetchEmployees}
-            />
+                <AddEmployeeModal
+                    isOpen={isAddModalOpen}
+                    onClose={() => setIsAddModalOpen(false)}
+                    onEmployeeAdded={fetchEmployees}
+                />
+                <UpdateEmployeeModal
+                    isOpen={isUpdateModalOpen}
+                    onClose={() => setIsUpdateModalOpen(false)}
+                    employeeToUpdate={employeeToUpdate}
+                    onEmployeeUpdated={fetchEmployees}
+                />
+            </PageContainer>
         </div>
     );
 };
 
 export default EmployeesPage;
-interface CustomStyles {
-    container: React.CSSProperties;
-    header: React.CSSProperties;
-    title: React.CSSProperties;
-    addButton: React.CSSProperties;
-    listContainer: React.CSSProperties;
-    loading: React.CSSProperties;
-}
-// Estilos básicos para a página e cards
-const pageStyles: CustomStyles = {
-    container: { // TS agora sabe que esta chave deve ser um objeto React.CSSProperties
-        padding: '20px', 
-        maxWidth: '1000px', 
-        margin: '0 auto',
-        fontFamily: 'Arial, sans-serif',
-    },
-    header: {
-        display: 'flex', justifyContent: 'space-between',
-        alignItems: 'center', borderBottom: '2px solid #eee',
-        paddingBottom: '15px', marginBottom: '20px',
-    },
-    title: {
-        color: '#003366', fontSize: '28px', margin: 0,
-    },
-    addButton: {
-        backgroundColor: '#003366', color: 'white', padding: '10px 15px',
-        border: 'none', borderRadius: '5px', cursor: 'pointer',
-        fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    },
-    listContainer: {
-        display: 'flex', flexWrap: 'wrap', gap: '20px',
-    },
-    loading: {
-        textAlign: 'center', paddingTop: '50px', fontSize: '18px',
-        color: '#555',
-    }
+
+const listContainerStyles: React.CSSProperties = {
+    display: 'flex', 
+    flexWrap: 'wrap', 
+    gap: '20px',
+};
+
+const loadingStyles: React.CSSProperties = {
+    textAlign: 'center', paddingTop: '50px', fontSize: '18px',
+    color: '#555',
 };
 
 const cardStyles: React.CSSProperties & {

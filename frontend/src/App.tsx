@@ -7,6 +7,7 @@ import CreateAccountScreen from './pages/CreateAccountPage';
 import AircraftsPage from './pages/AdminAircraftsPage'; 
 import EmployeesPage from './pages/EmployeesPage';
 import HomeScreen from './pages/HomePage';
+import AirportsPage from './pages/AirportsPage';
 
 function App() {
   return (
@@ -18,6 +19,8 @@ function App() {
       <Route path="/admin/aircrafts" element={<AircraftsPage />} />
 
       <Route path="/admin/employees" element={<EmployeesPage />} />
+
+      <Route path="/admin/airports" element={<AirportsPage />} />
 
       <Route path="/home" element={<HomeScreen/>} />
       

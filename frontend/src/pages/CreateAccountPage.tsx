@@ -104,12 +104,12 @@ const CreateAccountScreen: React.FC = () => {
         setMessage('');
 
         if (formData.CPF.length !== 11) {
-            setMessage('Erro: O CPF deve conter 11 dígitos.');
+            setMessage('Error: The identification number (CPF) must contain 11 digits.');
             setLoading(false);
             return;
         }
         if (formData.RG.length !== 9) {
-            setMessage('Erro: O RG deve conter 9 dígitos.');
+            setMessage('Error: The RG must contain 9 digits.');
             setLoading(false);
             return;
         }
@@ -124,14 +124,14 @@ const CreateAccountScreen: React.FC = () => {
             });
 
             if (response.ok) {
-                setMessage('Conta criada com sucesso!');
+                setMessage('Account created successfully!');
             } else {
                 const errorData = await response.json();
-                setMessage(`Erro ao criar conta: ${errorData.message || response.statusText}`);
+                setMessage(`Error creating account: ${errorData.message || response.statusText}`);
             }
         } catch (error) {
-            console.error('Erro de rede:', error);
-            setMessage('Erro de conexão com o servidor.');
+            console.error('Network error:', error);
+            setMessage('Server connection error.');
         } finally {
             setLoading(false);
         }
