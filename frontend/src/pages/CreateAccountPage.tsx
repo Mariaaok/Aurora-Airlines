@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 const API_URL = 'http://localhost:5000/users';
 
+
 interface FullCreateUserDto {
     name: string;
     address: string;
@@ -41,10 +42,11 @@ interface InputFieldProps {
     type?: string;
     value: string; 
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; 
+    customInputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
 const InputField: React.FC<InputFieldProps> = 
-    ({ label, name, placeholder, type = 'text', value, onChange }) => (
+    ({ label, name, placeholder, type = 'text', value, onChange, customInputProps = {} }) => (
     <div style={styles.inputGroup}>
         <label htmlFor={name} style={styles.label}>{label}</label>
         <input
@@ -56,6 +58,7 @@ const InputField: React.FC<InputFieldProps> =
             placeholder={placeholder}
             style={styles.input}
             required
+            {...customInputProps}
         />
     </div>
 );
@@ -68,9 +71,30 @@ const CreateAccountScreen: React.FC = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-            setFormData(prev => ({ 
+        let newValue = value;
+
+        if (name === 'phoneNumber') {
+            newValue = value.replace(/[^0-9]/g, ''); 
+        }
+        
+        if (name === 'CPF') {
+            newValue = value.replace(/[^0-9]/g, '').slice(0, 11);
+        }
+
+        if (name === 'RG') {
+            newValue = value.replace(/[^0-9]/g, '').slice(0, 9);
+        }
+
+        if (name === 'birthday' || name === 'RGIssueDate') {
+            if (e.target.type !== 'date') {
+                newValue = value.replace(/[^0-9-]/g, ''); 
+     
+            }
+        }
+        
+        setFormData(prev => ({ 
             ...prev, 
-            [name as keyof FullCreateUserDto]: value 
+            [name as keyof FullCreateUserDto]: newValue 
         }));
     };
 
@@ -78,6 +102,17 @@ const CreateAccountScreen: React.FC = () => {
         e.preventDefault();
         setLoading(true);
         setMessage('');
+
+        if (formData.CPF.length !== 11) {
+            setMessage('Erro: O CPF deve conter 11 dígitos.');
+            setLoading(false);
+            return;
+        }
+        if (formData.RG.length !== 9) {
+            setMessage('Erro: O RG deve conter 9 dígitos.');
+            setLoading(false);
+            return;
+        }
 
         try {
             const response = await fetch(API_URL, {
@@ -89,7 +124,6 @@ const CreateAccountScreen: React.FC = () => {
             });
 
             if (response.ok) {
-                const data = await response.json();
                 setMessage('Conta criada com sucesso!');
             } else {
                 const errorData = await response.json();
@@ -121,21 +155,59 @@ const CreateAccountScreen: React.FC = () => {
                     <form onSubmit={handleSubmit}>
                         <InputField label="Full name" name="name" placeholder="Name and surname" value={formData.name} onChange={handleChange} />
                         <InputField label="Address" name="address" placeholder="Full address" value={formData.address} onChange={handleChange} />
-                        <InputField label="Phone number" name="phoneNumber" placeholder="With country code" value={formData.phoneNumber} onChange={handleChange} />
+                        <InputField 
+                            label="Phone number" 
+                            name="phoneNumber" 
+                            placeholder="With country code" 
+                            value={formData.phoneNumber} 
+                            onChange={handleChange}
+                            customInputProps={{ inputMode: 'numeric', maxLength: 15 }}
+                        />
                         <InputField label="E-mail" name="email" placeholder="example@email.com" type="email" value={formData.email} onChange={handleChange} />
                         <InputField label="Workplace" name="workplace" placeholder="Name of company" value={formData.workplace} onChange={handleChange} />
-                        <InputField label="Workplace address" name="workplaceAddress" placeholder="Name of company" value={formData.workplaceAddress} onChange={handleChange} />
-                        <InputField label="Birthday" name="birthday" placeholder="yyyy-mm-dd" value={formData.birthday} onChange={handleChange} />
+                        <InputField label="Workplace address" name="workplaceAddress" placeholder="Full address" value={formData.workplaceAddress} onChange={handleChange} />
+                        <InputField 
+                            label="Birthday" 
+                            name="birthday" 
+                            placeholder="yyyy-mm-dd" 
+                            type="text" 
+                            value={formData.birthday} 
+                            onChange={handleChange} 
+                            customInputProps={{ pattern: "\\d{4}-\\d{2}-\\d{2}", title: "Formato: YYYY-MM-DD" }}
+                        />
 
                         <h3 style={styles.subTitle}>Documentos e Segurança</h3>
-                        <InputField label="Password" name="password" placeholder="Sua senha" type="password" value={formData.password} onChange={handleChange} />
-                        <InputField label="CPF" name="CPF" placeholder="000.000.000-00" value={formData.CPF} onChange={handleChange} />
-                        <InputField label="RG" name="RG" placeholder="Seu número de RG" value={formData.RG} onChange={handleChange} />
-                        <InputField label="Data de Emissão RG" name="RGIssueDate" placeholder="yyyy-mm-dd" value={formData.RGIssueDate} onChange={handleChange} />
-                        <InputField label="Órgão Emissor RG" name="IssuingBodyofRG" placeholder="Ex: SSP/SP" value={formData.IssuingBodyofRG} onChange={handleChange} />
+                        <InputField label="Password" name="password" placeholder="Password" type="password" value={formData.password} onChange={handleChange} />
+                        
+                        <InputField 
+                            label="CPF" 
+                            name="CPF" 
+                            placeholder="00000000000" 
+                            value={formData.CPF} 
+                            onChange={handleChange}
+                            customInputProps={{ inputMode: 'numeric', maxLength: 11 }}
+                        />
+                        <InputField 
+                            label="RG" 
+                            name="RG" 
+                            placeholder="000000000" 
+                            value={formData.RG} 
+                            onChange={handleChange}
+                            customInputProps={{ inputMode: 'numeric', maxLength: 9 }}
+                        />
+                        <InputField 
+                        label="RG Issue Date" 
+                        name="RGIssueDate" 
+                        placeholder="yyyy-mm-dd" 
+                        type="text" 
+                        value={formData.RGIssueDate} 
+                        onChange={handleChange} 
+                        customInputProps={{ pattern: "\\d{4}-\\d{2}-\\d{2}", title: "Formato: YYYY-MM-DD" }}
+                    />
+                        <InputField label="Issuing Body of RG" name="IssuingBodyofRG" placeholder="Ex: SSP/SP" value={formData.IssuingBodyofRG} onChange={handleChange} />
 
 
-                        {message && <p style={{ color: message.startsWith('Erro') ? 'red' : 'green' }}>{message}</p>}
+                        {message && <p style={{ color: message.startsWith('Erro') ? 'red' : 'green', marginTop: '15px' }}>{message}</p>}
 
                         <button type="submit" disabled={loading} style={styles.submitButton}>
                             {loading ? 'Criando...' : 'Create Account'}
@@ -147,89 +219,101 @@ const CreateAccountScreen: React.FC = () => {
     );
 };
 
-const styles: { [key: string]: React.CSSProperties } = {
+export default CreateAccountScreen;
+
+
+
+const styles: any = {
     container: {
         minHeight: '100vh',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#f4f7f6',
+        fontFamily: 'Arial, sans-serif',
     },
     header: {
-        backgroundColor: '#00254A',
-        color: 'white',
-        padding: '10px 50px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
+        padding: '15px 50px',
+        backgroundColor: '#003366', 
     },
     logoContainer: {
         display: 'flex',
         alignItems: 'center',
     },
     logoText: {
-        fontSize: '20px',
+        color: '#a0ffff',
+        fontSize: '24px',
         fontWeight: 'bold',
-        marginLeft: '10px',
+        letterSpacing: '2px',
+    },
+    registerLink: {
+        textDecoration: 'none',
     },
     signInButton: {
-        backgroundColor: '#1E90FF', 
+        backgroundColor: '#005f99',
         color: 'white',
         border: 'none',
         padding: '10px 20px',
         borderRadius: '5px',
         cursor: 'pointer',
         fontWeight: 'bold',
-        fontSize: '16px',
+        transition: 'background-color 0.3s',
     },
     mainContent: {
         display: 'flex',
         justifyContent: 'center',
-        padding: '40px 0',
+        padding: '40px 20px',
     },
     formContainer: {
         backgroundColor: 'white',
         padding: '40px',
-        borderRadius: '8px',
-        boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+        borderRadius: '10px',
+        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
         width: '100%',
-        maxWidth: '500px', 
+        maxWidth: '500px',
     },
     title: {
-        color: '#00254A',
+        color: '#003366',
+        textAlign: 'center',
         marginBottom: '30px',
-        fontSize: '24px',
+        fontSize: '28px',
     },
     subTitle: {
-        color: '#00254A',
+        color: '#003366',
         marginTop: '30px',
         marginBottom: '15px',
+        borderBottom: '1px solid #eee',
+        paddingBottom: '5px',
         fontSize: '18px',
     },
     inputGroup: {
-        marginBottom: '20px',
+        marginBottom: '15px',
     },
     label: {
         display: 'block',
         marginBottom: '5px',
-        fontWeight: '500',
         color: '#333',
+        fontWeight: '600',
     },
     input: {
         width: '100%',
         padding: '12px',
         border: '1px solid #ccc',
-        borderRadius: '4px',
+        borderRadius: '5px',
         boxSizing: 'border-box',
+        fontSize: '16px',
     },
     submitButton: {
         width: '100%',
-        backgroundColor: '#00254A',
-        color: 'white',
         padding: '15px',
+        backgroundColor: '#005f99',
+        color: 'white',
         border: 'none',
         borderRadius: '5px',
         cursor: 'pointer',
         fontSize: '18px',
-        marginTop: '20px',
-    },
+        fontWeight: 'bold',
+        marginTop: '25px',
+        transition: 'background-color 0.3s',
+    }
 };
-
-export default CreateAccountScreen;

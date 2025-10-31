@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 const API_URL = 'http://localhost:5000/users';
 
 interface LoginFormData {
-    username: string;
+    email: string;
     password: string;
 }
 
@@ -44,7 +44,7 @@ const InputField: React.FC<InputFieldProps> =
 
 
 const LoginScreen: React.FC = () => {
-    const [formData, setFormData] = useState<LoginFormData>({ username: '', password: '' });
+    const [formData, setFormData] = useState<LoginFormData>({ email: '', password: '' });
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
     const { login, isAuthenticated, user } = useAuth();
@@ -70,7 +70,7 @@ const LoginScreen: React.FC = () => {
         setLoading(true);
         setMessage('');
 
-        const { username, password } = formData;
+        const { email, password } = formData;
 
         try {
             const response = await fetch(API_URL);
@@ -84,7 +84,7 @@ const LoginScreen: React.FC = () => {
             const users: UserDto[] = await response.json();
 
             const foundUser = users.find(user => 
-                user.name === username && user.password === password
+                user.name === email && user.password === password
             );
 
             if (foundUser) {
@@ -120,8 +120,8 @@ const LoginScreen: React.FC = () => {
             <form onSubmit={handleLogin} style={styles.form}>
                 <InputField 
                     label="Username" 
-                    name="username" 
-                    value={formData.username} 
+                    name="email" 
+                    value={formData.email} 
                     onChange={handleChange} 
                 />
                 <InputField 
