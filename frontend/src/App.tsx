@@ -1,4 +1,3 @@
-// src/App.tsx
 
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
@@ -8,6 +7,9 @@ import AircraftsPage from './pages/AdminAircraftsPage';
 import EmployeesPage from './pages/EmployeesPage';
 import HomeScreen from './pages/HomePage';
 import AirportsPage from './pages/AirportsPage';
+import AdminAircraftTypesPage from './pages/AircraftTypesPage';
+import AdminFlightTypesPage from './pages/FlightTypesPage';
+import AdminFlightsPage from './pages/FlightsPage';
 
 function App() {
   return (
@@ -22,6 +24,12 @@ function App() {
 
       <Route path="/admin/airports" element={<AirportsPage />} />
 
+      <Route path="/admin/aircraftTypes" element={<AdminAircraftTypesPage />} />
+
+      <Route path="/admin/flightTypesPage" element={<AdminFlightTypesPage />} />
+
+      <Route path="/admin/flights" element={<AdminFlightsPage />} />
+      
       <Route path="/home" element={<HomeScreen/>} />
       
       <Route path="*" element={<h1>404 | Página Não Encontrada</h1>} />

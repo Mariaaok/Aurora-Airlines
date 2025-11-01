@@ -79,23 +79,23 @@ const EmployeesPage: React.FC = () => {
                         employees.map(employee => (
                             <div key={employee.id} style={cardStyles.card}>
                                 <div style={cardStyles.dataGroup}>
-                                    <p style={cardStyles.dataLabel}>**Name:**</p>
+                                    <p style={cardStyles.dataLabel}>Name:</p>
                                     <p style={cardStyles.dataValue}>{employee.name}</p>
                                 </div>
                                 <div style={cardStyles.dataGroup}>
-                                    <p style={cardStyles.dataLabel}>**Birthday:**</p>
+                                    <p style={cardStyles.dataLabel}>Birthday:</p>
                                     <p style={cardStyles.dataValue}>{employee.birthday}</p>
                                 </div>
                                 <div style={cardStyles.dataGroup}>
-                                    <p style={cardStyles.dataLabel}>**E-mail:**</p>
+                                    <p style={cardStyles.dataLabel}>E-mail:</p>
                                     <p style={cardStyles.dataValue}>{employee.email}</p>
                                 </div>
                                 <div style={cardStyles.dataGroup}>
-                                    <p style={cardStyles.dataLabel}>**Phone:**</p>
+                                    <p style={cardStyles.dataLabel}>Phone:</p>
                                     <p style={cardStyles.dataValue}>{employee.phoneNumber}</p>
                                 </div>
                                 <div style={cardStyles.dataGroup}>
-                                    <p style={cardStyles.dataLabel}>**Category:**</p>
+                                    <p style={cardStyles.dataLabel}>Category:</p>
                                     <p style={cardStyles.dataValue}>{employee.category}</p>
                                 </div>
 

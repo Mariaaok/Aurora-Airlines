@@ -3,8 +3,8 @@ import { NavLink, useLocation } from 'react-router-dom';
 
 const adminItems = [
     { label: "Flights", path: "/admin/flights" },
-    { label: "Flight Types", path: "/admin/flight-types" },
-    { label: "Aircraft Types", path: "/admin/aircraft-types" },
+    { label: "Flight Types", path: "/admin/flightTypesPage" },
+    { label: "Aircraft Types", path: "/admin/aircraftTypes" },
     { label: "Aircrafts", path: "/admin/aircrafts" },
     { label: "Airports", path: "/admin/airports" },
     { label: "Employees", path: "/admin/employees" },

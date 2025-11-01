@@ -5,6 +5,10 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/user.module';
 import { EmployeesModule } from './employees/employees.module';
 import { AirportsModule } from './airports/airports.module';
+import { AircraftTypesModule } from './aircraftTypes/aircraft-types.module';
+import { AircraftsModule } from './aircrafts/aircrafts.module';
+import { FlightTypesModule } from './flightTypes/flight-types.module';
+import { FlightsModule } from './flights/flights.module';
 
 @Module({
   imports: [
@@ -16,7 +20,11 @@ import { AirportsModule } from './airports/airports.module';
     }),
     UsersModule,
     EmployeesModule,
-    AirportsModule
+    AirportsModule,
+    AircraftTypesModule,
+    AircraftsModule,
+    FlightTypesModule,
+    FlightsModule
   ],
   controllers: [AppController],
   providers: [AppService],
