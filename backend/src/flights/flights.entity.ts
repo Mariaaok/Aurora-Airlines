@@ -40,7 +40,13 @@ export class Flights {
 
   // --- Campos de Tempo e Rota ---
   @Column()
+  departureDate: string;
+
+  @Column()
   departureTime: string;
+
+  @Column()
+  arrivalDate: string;
 
   @Column()
   arrivalTime: string;

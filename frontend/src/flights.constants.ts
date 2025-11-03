@@ -29,7 +29,9 @@ export interface Flight {
     destinationAirportId: number;
     destinationAirport: Airport;
     
+    departureDate: string;
     departureTime: string;
+    arrivalDate: string;
     arrivalTime: string;
     estimatedDuration: string;
     transfers: string; // JSON string

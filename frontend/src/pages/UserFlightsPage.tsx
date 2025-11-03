@@ -56,7 +56,7 @@ const FlightCard: React.FC<FlightCardProps> = ({ flight }) => {
                 {/* Seção de Partida */}
                 <div style={styles.flightEndpoint}>
                     <span style={styles.flightCity}>{flight.originCity} ({departure.date})</span>
-                    <span style={styles.flightTime}>{flight.departureTime}</span>
+                    <span style={styles.flightTime}>{departure.time}</span>
                 </div>
 
                 <span style={styles.flightArrow}>→</span>
@@ -64,7 +64,7 @@ const FlightCard: React.FC<FlightCardProps> = ({ flight }) => {
                 {/* Seção de Chegada */}
                 <div style={styles.flightEndpoint}>
                     <span style={styles.flightCity}>{flight.destinationCity} ({arrival.date})</span>
-                    <span style={styles.flightTime}>{flight.arrivalTime}</span>
+                    <span style={styles.flightTime}>{arrival.time}</span>
                 </div>
             </div>
             <div style={styles.flightDetails}>

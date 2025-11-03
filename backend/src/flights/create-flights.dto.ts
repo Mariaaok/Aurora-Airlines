@@ -23,7 +23,15 @@ export class CreateFlightsDto {
 
   @IsString()
   @IsNotEmpty()
+  departureDate: string;
+
+  @IsString()
+  @IsNotEmpty()
   departureTime: string;
+
+  @IsString()
+  @IsNotEmpty()
+  arrivalDate: string;
 
   @IsString()
   @IsNotEmpty()

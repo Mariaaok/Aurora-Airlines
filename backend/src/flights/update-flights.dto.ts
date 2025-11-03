@@ -27,7 +27,15 @@ export class UpdateFlightsDto {
 
   @IsString()
   @IsOptional()
+  departureDate?: string;
+
+  @IsString()
+  @IsOptional()
   arrivalTime?: string;
+
+  @IsString()
+  @IsOptional()
+  arrivalDate?: string;
 
   @IsString()
   @IsOptional()

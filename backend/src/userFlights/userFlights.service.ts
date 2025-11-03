@@ -23,6 +23,8 @@ export class UserFlightsService {
             .where('uf.userId = :userId', { userId: userId })
             .getMany();
 
+            console.log("REGISTROS ENCONTRADOS PELO GETMANY:", userFlights);
+
         // 2. Mapeamos para o DTO corrigido
         const mappedFlights = userFlights.map(uf => {
 

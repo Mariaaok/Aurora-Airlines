@@ -12,6 +12,8 @@ export class UserFlightsController {
   async findMyFlights(@Request() req): Promise<UserFlightsResponseDto[]> {
     const userId: number = req.user.id;
 
+    console.log("BUSCANDO VOOS PARA O UserId:", userId);
+
     return this.userFlightsService.findFlightsForUserFrontend(userId);
   }
 }

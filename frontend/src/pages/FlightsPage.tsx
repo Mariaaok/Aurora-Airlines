@@ -19,7 +19,9 @@ interface FlightDisplayData {
     flightNumber: string;
     flightType: string;
     aircraftType: string;
+    departureDate: string;
     departureTime: string;
+    arrivalDate: string;
     arrivalTime: string;
     estimatedDuration: string;
     originAirport: string;
@@ -148,7 +150,9 @@ const AdminFlightsPage: React.FC = () => {
             flightNumber: flight.flightNumber,
             flightType: flight.flightType.name,
             aircraftType: flight.aircraftType.type,
+            departureDate: flight.departureDate,
             departureTime: flight.departureTime,
+            arrivalDate: flight.arrivalDate,
             arrivalTime: flight.arrivalTime,
             estimatedDuration: flight.estimatedDuration,
             originAirport: `${flight.originAirport.name} (${flight.originAirport.IATA})`,
@@ -205,9 +209,11 @@ const AdminFlightsPage: React.FC = () => {
                                     <div className="flex flex-col space-y-1">
                                         <p><strong>Flight number:</strong> {data.flightNumber}</p>
                                         <p><strong>Aircraft type:</strong> {data.aircraftType}</p>
-                                        <p><strong>Departure:</strong> {data.departureTime}</p>
+                                        <p><strong>Departure date:</strong> {data.departureDate}</p>
+                                        <p><strong>Departure time:</strong> {data.departureTime}</p>
                                         <p><strong>Transfer count:</strong> {data.transferCount}</p>
-                                        <p><strong>Arrival:</strong> {data.arrivalTime}</p>
+                                        <p><strong>Arrival date:</strong> {data.arrivalDate}</p>
+                                        <p><strong>Arrival time:</strong> {data.arrivalTime}</p>
                                         <p className="mt-2"><strong>Staff:</strong> {data.staffNames}</p>
                                     </div>
                                     
