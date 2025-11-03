@@ -13,7 +13,9 @@ export class UserFlightsResponseDto {
     flightNumber: string;
     duration: string;
     flightType: string;
+    departureDate: string;
     departureTime: string; // Enviar como string ISO (ex: "2025-10-05T05:04:00.000Z")
+    arrivalDate: string;
     arrivalTime: string;   // O frontend pode formatar
     aircraftType: string;
   

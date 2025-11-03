@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import Navbar from '../components/layouts/navbar';
 
 // 1. CONSTANTES E INTERFACES (Seguindo seu padrão)
 // Assumindo que a API de voos está neste endpoint
@@ -13,7 +14,9 @@ interface Flight {
   flightNumber: string;
   duration: string;
   flightType: string;
+  departureDate: string;
   departureTime: string;
+  arrivalDate: string;
   arrivalTime: string;
   aircraftType: string;
   originCity: string;
@@ -22,49 +25,115 @@ interface Flight {
   destinationIATA: string;
 }
 
-// 2. SUB-COMPONENTE (Seguindo seu padrão de criar 'InputField')
-// Criei um 'FlightCard' para reutilizar na lista
-const formatFlightTime = (isoString: string) => {
-  const date = new Date(isoString);
-  
-  // Ajusta para o fuso horário local (importante!)
-  const dateStr = date.toLocaleDateString(undefined, { 
-    day: '2-digit', 
-    month: '2-digit' 
-  });
-  
-  const timeStr = date.toLocaleTimeString(undefined, { 
-    hour: '2-digit', 
-    minute: '2-digit' 
-  });
-  
-  return { date: dateStr, time: timeStr };
+interface FlightDetailModalProps {
+    flight: Flight;
+    onClose: () => void; // Função para fechar o modal
 }
 
+const FlightDetailModal: React.FC<FlightDetailModalProps> = ({ flight, onClose }) => {
+    
+    // Impede que o clique no conteúdo do modal feche o modal
+    const handleModalContentClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+    };
+
+    // Ação do botão (por enquanto, apenas fecha o modal)
+    const handleCancelFlight = () => {
+        alert(`Ação de cancelar o voo ${flight.flightNumber} ainda não implementada.`);
+        // Aqui você poderia adicionar a lógica de API para cancelar
+        onClose(); 
+    };
+    
+    return (
+        // O Overlay (fundo escuro) que fecha ao clicar
+        <div style={styles.modalOverlay} onClick={onClose}>
+            
+            {/* O conteúdo do modal */}
+            <div style={styles.modalContent} onClick={handleModalContentClick}>
+                
+                {/* Cabeçalho do Modal */}
+                <div style={styles.modalHeader}>
+                    <span style={styles.modalHeaderText}>
+                        {flight.originCity} ({flight.departureDate})
+                    </span>
+                    <span style={styles.modalHeaderArrow}>→</span>
+                    <span style={styles.modalHeaderText}>
+                        {flight.destinationCity} ({flight.arrivalDate})
+                    </span>
+                </div>
+
+                {/* Corpo do Modal (dividido em 2 colunas) */}
+                <div style={styles.modalBody}>
+                    {/* Coluna Esquerda */}
+                    <div style={styles.modalColumn}>
+                        <div style={styles.modalRow}>
+                            <span style={styles.modalLabel}>Departure:</span>
+                            <span style={styles.modalValue}>{flight.departureTime} {flight.originIATA}</span>
+                        </div>
+                        <div style={styles.modalRow}>
+                            <span style={styles.modalLabel}>Flight duration:</span>
+                            <span style={styles.modalValue}>{flight.duration}</span>
+                        </div>
+                        <div style={styles.modalRow}>
+                            <span style={styles.modalLabel}>Aircraft:</span>
+                            <span style={styles.modalValue}>{flight.aircraftType}</span>
+                        </div>
+                        <div style={styles.modalRow}>
+                            <span style={styles.modalLabel}>Flight number:</span>
+                            <span style={styles.modalValue}>{flight.flightNumber}</span>
+                        </div>
+                    </div>
+                    
+                    {/* Coluna Direita */}
+                    <div style={styles.modalColumn}>
+                        <div style={styles.modalRow}>
+                            <span style={styles.modalLabel}>Estimated arrival:</span>
+                            <span style={styles.modalValue}>{flight.arrivalTime} {flight.destinationIATA}</span>
+                        </div>
+                        <div style={styles.modalRow}>
+                            <span style={styles.modalLabel}>Seats:</span>
+                            <span style={styles.modalValue}>{flight.seat}</span>
+                        </div>
+                        <div style={styles.modalRow}>
+                            <span style={styles.modalLabel}>Status:</span>
+                            <span style={styles.modalValueStatus}>{flight.status}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Rodapé do Modal */}
+                <div style={styles.modalFooter}>
+                    <button style={styles.cancelButton} onClick={handleCancelFlight}>
+                        Cancel flight
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 interface FlightCardProps {
     flight: Flight;
+    onClick: (flight: Flight) => void;
 }
 
-const FlightCard: React.FC<FlightCardProps> = ({ flight }) => {
-    const departure = formatFlightTime(flight.departureTime);
-    const arrival = formatFlightTime(flight.arrivalTime);
+const FlightCard: React.FC<FlightCardProps> = ({ flight, onClick }) => {
 
     return (
-        <div style={styles.flightCard}>
+        <div style={styles.flightCardButton} onClick={() => onClick(flight)}>
             <div style={styles.flightRow}>
                 {/* Seção de Partida */}
                 <div style={styles.flightEndpoint}>
-                    <span style={styles.flightCity}>{flight.originCity} ({departure.date})</span>
-                    <span style={styles.flightTime}>{departure.time}</span>
+                    <span style={styles.flightCity}>{flight.originCity} ({flight.departureDate})</span>
+                    <span style={styles.flightTime}>{flight.departureTime}</span>
                 </div>
 
                 <span style={styles.flightArrow}>→</span>
 
                 {/* Seção de Chegada */}
                 <div style={styles.flightEndpoint}>
-                    <span style={styles.flightCity}>{flight.destinationCity} ({arrival.date})</span>
-                    <span style={styles.flightTime}>{arrival.time}</span>
+                    <span style={styles.flightCity}>{flight.destinationCity} ({flight.arrivalDate})</span>
+                    <span style={styles.flightTime}>{flight.arrivalTime}</span>
                 </div>
             </div>
             <div style={styles.flightDetails}>
@@ -81,6 +150,7 @@ const UserFlights: React.FC = () => {
     const [flights, setFlights] = useState<Flight[]>([]);
     const [loading, setLoading] = useState(true); // Começa true para buscar dados
     const [message, setMessage] = useState('');
+    const [selectedFlight, setSelectedFlight] = useState<Flight | null>(null);
 
     // Lógica de busca de dados (Adaptado do seu handleSubmit)
     useEffect(() => {
@@ -113,6 +183,14 @@ const UserFlights: React.FC = () => {
         fetchFlights(); // Executa a função ao carregar o componente
     }, []); // O array vazio [] garante que isso rode apenas uma vez
 
+    const handleCardClick = (flight: Flight) => {
+        setSelectedFlight(flight);
+    };
+
+    const handleCloseModal = () => {
+        setSelectedFlight(null);
+    };
+
     // Função para renderizar o conteúdo da lista
     const renderContent = () => {
         if (loading) {
@@ -128,20 +206,13 @@ const UserFlights: React.FC = () => {
         
         // Mapeia os dados do state para o sub-componente FlightCard
         return flights.map(flight => (
-            <FlightCard key={flight.userFlightId} flight={flight} />
+            <FlightCard key={flight.userFlightId} flight={flight} onClick={handleCardClick}/>
         ));
     };
 
     return (
         <div style={styles.container}>
-            <div style={styles.header}>
-                <div style={styles.logoContainer}>
-                    <span style={styles.logoText}>AURORA AIRLINES</span>
-                </div>
-                <Link to="/" style={styles.registerLink}>
-                    <button style={styles.signInButton}>Sign in</button>
-                </Link>
-            </div>
+            <Navbar/>
 
             <div style={styles.mainContent}>
                 <div style={styles.flightListContainer}>
@@ -152,6 +223,12 @@ const UserFlights: React.FC = () => {
                     </div>
                 </div>
             </div>
+            {selectedFlight && (
+                <FlightDetailModal 
+                    flight={selectedFlight} 
+                    onClose={handleCloseModal} 
+                />
+            )}
         </div>
     );
 };
@@ -188,6 +265,9 @@ const styles: { [key: string]: React.CSSProperties } = {
         fontWeight: 'bold',
         fontSize: '16px',
     },
+    registerLink: { 
+        textDecoration: 'none',
+    },
     mainContent: {
         display: 'flex',
         justifyContent: 'center',
@@ -209,13 +289,17 @@ const styles: { [key: string]: React.CSSProperties } = {
         width: '100%',
     },
     
-    flightCard: {
+    flightCardButton: {
         backgroundColor: 'white',
         borderRadius: '12px',
         padding: '20px 24px',
         marginBottom: '16px',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
         border: '1px solid #eee',
+        width: '100%',
+        cursor: 'pointer',
+        textAlign: 'left', 
+        fontFamily: 'inherit',
     },
     flightRow: {
         display: 'flex',
@@ -247,6 +331,93 @@ const styles: { [key: string]: React.CSSProperties } = {
         borderTop: '1px solid #f0f0f0',
         paddingTop: '12px',
         marginTop: '12px',
+    },
+
+    //MODAL STYLES
+    modalOverlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1000,
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        borderRadius: '8px',
+        padding: '24px',
+        width: '100%',
+        maxWidth: '550px',
+        boxShadow: '0 5px 15px rgba(0, 0, 0, 0.3)',
+    },
+    modalHeader: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderBottom: '1px solid #eee',
+        paddingBottom: '16px',
+        marginBottom: '16px',
+    },
+    modalHeaderText: {
+        fontSize: '20px',
+        fontWeight: 'bold',
+        color: '#00254A',
+    },
+    modalHeaderArrow: {
+        fontSize: '20px',
+        color: '#00254A',
+    },
+    modalBody: {
+        display: 'flex',
+        flexDirection: 'row',
+        gap: '24px', // Espaço entre as colunas
+    },
+    modalColumn: {
+        flex: 1, // Faz as colunas dividirem o espaço
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '12px',
+    },
+    modalRow: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    modalLabel: {
+        fontSize: '14px',
+        color: '#555',
+        marginBottom: '2px',
+    },
+    modalValue: {
+        fontSize: '16px',
+        fontWeight: '500',
+        color: '#111',
+    },
+    modalValueStatus: {
+        fontSize: '16px',
+        fontWeight: 'bold',
+        color: '#00254A',
+        textTransform: 'capitalize', // Deixa 'booked' com 'B' maiúsculo
+    },
+    modalFooter: {
+        borderTop: '1px solid #eee',
+        paddingTop: '16px',
+        marginTop: '16px',
+        display: 'flex',
+        justifyContent: 'flex-end', // Alinha o botão à direita
+    },
+    cancelButton: {
+        backgroundColor: '#d9534f', // Vermelho
+        color: 'white',
+        border: 'none',
+        padding: '10px 20px',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontWeight: 'bold',
+        fontSize: '16px',
     },
 };
 
