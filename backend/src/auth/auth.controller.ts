@@ -1,5 +1,5 @@
 // src/auth/auth.controller.ts
-import { Controller, Post, UseGuards, Request, Get, Body } from '@nestjs/common';
+import { Controller, Post, UseGuards, Request, Get, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { LocalAuthGuard } from './local-auth.guard'; // Criaremos este guardinha
 import { SessionAuthGuard } from './session-auth.guard';
 import { LoginDto } from './login.dto'; // Crie um DTO simples
@@ -13,6 +13,7 @@ export class AuthController {
    */
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   async login(@Request() req, @Body() loginDto: LoginDto): Promise<any> {
     // Se o 'LocalAuthGuard' passar, o 'req.user' já foi
     // preenchido pelo 'validate' da LocalStrategy.
@@ -42,10 +43,3 @@ export class AuthController {
     return req.user;
   }
 }
-
-// Crie também o 'local-auth.guard.ts'
-// (é um guard padrão do Nest.js que apenas invoca a estratégia 'local')
-import { Injectable } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-@Injectable()
-export class LocalAuthGuard extends AuthGuard('local') {}

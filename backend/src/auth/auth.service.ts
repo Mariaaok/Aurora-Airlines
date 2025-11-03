@@ -16,6 +16,7 @@ export class AuthService {
     // 1. Encontre o usuário pelo email
     // (Assumindo que você tem 'findOneByEmail' no seu UsersService)
     const user = await this.usersService.findOneByEmail(email);
+    console.log('AUTHSERVICE: USUARIO ENCONTRADO')
 
     if (user) {
       // 2. Compare a senha enviada com o hash salvo no banco
@@ -25,10 +26,12 @@ export class AuthService {
         // 3. Se bater, retorne o usuário (sem a senha)
         const { password, ...result } = user;
         return result;
+      } else {
+        console.log("AUTHSERVICE: PASS DONT MATCH")
       }
     }
     
     // 4. Se não encontrar ou a senha não bater, lance um erro
-    throw new UnauthorizedException('Email ou senha inválidos');
+    throw new UnauthorizedException('Invalid e-mail or password');
   }
 }

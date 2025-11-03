@@ -9,6 +9,7 @@ import { AircraftTypesModule } from './aircraftTypes/aircraft-types.module';
 import { AircraftsModule } from './aircrafts/aircrafts.module';
 import { FlightTypesModule } from './flightTypes/flight-types.module';
 import { FlightsModule } from './flights/flights.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { FlightsModule } from './flights/flights.module';
     AircraftTypesModule,
     AircraftsModule,
     FlightTypesModule,
-    FlightsModule
+    FlightsModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
