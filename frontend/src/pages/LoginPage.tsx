@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom'; 
 
-const API_URL = 'http://localhost:5000/users';
+const API_URL = 'http://localhost:5000/auth/login';
 
 interface LoginFormData {
     email: string;
@@ -71,7 +71,7 @@ const LoginScreen: React.FC = () => {
         setLoading(true);
         setMessage('');
 
-        const { email, password } = formData;
+        /*const { email, password } = formData;
 
         try {
             const response = await fetch(API_URL);
@@ -106,6 +106,43 @@ const LoginScreen: React.FC = () => {
             setMessage('Connection or data processing error.');
         } finally {
             setLoading(false);
+        }*/
+
+        try {
+            const loginData = {
+                email: formData.email,
+                password: formData.password
+            };
+
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(loginData),
+                credentials: 'include',
+            });
+
+            if (response.ok) {
+                const userData = await response.json();
+
+                login({
+                    id: userData.id,
+                    name: userData.name,
+                    email: userData.email,
+                    type: userData.role
+                });
+
+                setMessage('Login sucessful!');
+
+            } else {
+                setMessage('Login failure: Incorrect user or password.')
+            }
+        } catch (error) {
+            console.error('Network or processing error:', error)
+            setMessage('Connection or data processing error.');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -120,7 +157,7 @@ const LoginScreen: React.FC = () => {
 
             <form onSubmit={handleLogin} style={styles.form}>
                 <InputField 
-                    label="Username" 
+                    label="E-mail" 
                     name="email" 
                     value={formData.email} 
                     onChange={handleChange} 

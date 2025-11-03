@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { UserFlights } from 'src/userFlights/userFlights.entity';
 
 @Entity()
 export class User {
@@ -33,4 +34,7 @@ export class User {
   @Column({ default: 'user' }) 
   role: 'admin' | 'user';
   isActive: boolean;
+    
+  @OneToMany(() => UserFlights, (userFlights) => userFlights.user)
+  bookings: UserFlights[];
 }

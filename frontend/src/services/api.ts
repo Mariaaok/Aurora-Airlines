@@ -13,3 +13,4 @@ export async function createUser(data: any) {
   });
   return res.json();
 }
+
