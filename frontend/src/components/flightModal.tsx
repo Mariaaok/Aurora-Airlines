@@ -36,7 +36,9 @@ const initialFormData: FlightFormData = {
     aircraftTypeId: 0,
     originAirportId: 0,
     destinationAirportId: 0,
+    departureDate: '',
     departureTime: '',
+    arrivalDate: '',
     arrivalTime: '',
     estimatedDuration: '',
     transfers: [],
@@ -68,7 +70,9 @@ const FlightModal: React.FC<FlightModalProps> = ({
                 aircraftTypeId: flightToEdit.aircraftTypeId,
                 originAirportId: flightToEdit.originAirportId,
                 destinationAirportId: flightToEdit.destinationAirportId,
+                departureDate: flightToEdit.departureDate,
                 departureTime: flightToEdit.departureTime,
+                arrivalDate: flightToEdit.arrivalDate,
                 arrivalTime: flightToEdit.arrivalTime,
                 estimatedDuration: flightToEdit.estimatedDuration,
                 transfers: transfersArray,
@@ -217,6 +221,15 @@ const FlightModal: React.FC<FlightModalProps> = ({
                     {/* SEÇÃO 2: TEMPO E ROTA */}
                     <FormSection title="Route and Schedule">
                         <div className="grid grid-cols-3 gap-4">
+
+                            <FormRow label="Departure Date">
+                              <input type="date" name="departureDate" value={formData.departureDate} onChange={handleChange} required style={modalStyles.input} />
+                           </FormRow>
+                           <FormRow label="Arrival Date">
+                              <input type="date" name="arrivalDate" value={formData.arrivalDate} onChange={handleChange} required style={modalStyles.input} />
+                           </FormRow>
+                           <div></div>
+
                             <FormRow label="Departure Time (Origin)">
                                 <input type="time" name="departureTime" value={formData.departureTime} onChange={handleChange} required style={modalStyles.input} />
                             </FormRow>
