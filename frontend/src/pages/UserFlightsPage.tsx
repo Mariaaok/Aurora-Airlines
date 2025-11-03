@@ -3,53 +3,80 @@ import { Link } from 'react-router-dom';
 
 // 1. CONSTANTES E INTERFACES (Seguindo seu padrão)
 // Assumindo que a API de voos está neste endpoint
-const API_URL = 'http://localhost:5000/flights/my-flights'; 
+const API_URL = 'http://localhost:5000/userFlights'; 
 
 // Interface para definir a estrutura de um voo, baseada na imagem
 interface Flight {
-  id: string; // Usado para a 'key' da lista
-  originCity: string;
-  originDate: string;
-  departureTime: string;
-  destinationCity: string;
-  destinationDate: string;
-  arrivalTime: string;
-  description: string;
+  userFlightId: number; // Usado para a 'key' da lista
+  seat: string;
+  status: 'booked' | 'checked-in' | 'cancelled' | 'completed';
+  flightNumber: string;
   duration: string;
+  flightType: string;
+  departureTime: string;
+  arrivalTime: string;
+  aircraftType: string;
+  originCity: string;
+  originIATA: string;
+  destinationCity: string;
+  destinationIATA: string;
 }
 
 // 2. SUB-COMPONENTE (Seguindo seu padrão de criar 'InputField')
 // Criei um 'FlightCard' para reutilizar na lista
+const formatFlightTime = (isoString: string) => {
+  const date = new Date(isoString);
+  
+  // Ajusta para o fuso horário local (importante!)
+  const dateStr = date.toLocaleDateString(undefined, { 
+    day: '2-digit', 
+    month: '2-digit' 
+  });
+  
+  const timeStr = date.toLocaleTimeString(undefined, { 
+    hour: '2-digit', 
+    minute: '2-digit' 
+  });
+  
+  return { date: dateStr, time: timeStr };
+}
+
+
 interface FlightCardProps {
     flight: Flight;
 }
 
-const FlightCard: React.FC<FlightCardProps> = ({ flight }) => (
-    <div style={styles.flightCard}>
-        <div style={styles.flightRow}>
-            {/* Seção de Partida */}
-            <div style={styles.flightEndpoint}>
-                <span style={styles.flightCity}>{flight.originCity} ({flight.originDate})</span>
-                <span style={styles.flightTime}>{flight.departureTime}</span>
+const FlightCard: React.FC<FlightCardProps> = ({ flight }) => {
+    const departure = formatFlightTime(flight.departureTime);
+    const arrival = formatFlightTime(flight.arrivalTime);
+
+    return (
+        <div style={styles.flightCard}>
+            <div style={styles.flightRow}>
+                {/* Seção de Partida */}
+                <div style={styles.flightEndpoint}>
+                    <span style={styles.flightCity}>{flight.originCity} ({departure.date})</span>
+                    <span style={styles.flightTime}>{flight.departureTime}</span>
+                </div>
+
+                <span style={styles.flightArrow}>→</span>
+
+                {/* Seção de Chegada */}
+                <div style={styles.flightEndpoint}>
+                    <span style={styles.flightCity}>{flight.destinationCity} ({arrival.date})</span>
+                    <span style={styles.flightTime}>{flight.arrivalTime}</span>
+                </div>
             </div>
-
-            <span style={styles.flightArrow}>→</span>
-
-            {/* Seção de Chegada */}
-            <div style={styles.flightEndpoint}>
-                <span style={styles.flightCity}>{flight.destinationCity} ({flight.destinationDate})</span>
-                <span style={styles.flightTime}>{flight.arrivalTime}</span>
+            <div style={styles.flightDetails}>
+                <span>{flight.flightType} - Duration: {flight.duration}</span>
             </div>
         </div>
-        <div style={styles.flightDetails}>
-            <span>{flight.description} - Duration: {flight.duration}</span>
-        </div>
-    </div>
-);
+    );
+};
 
 
 // 3. COMPONENTE PRINCIPAL (UserFlightList)
-const UserFlightList: React.FC = () => {
+const UserFlights: React.FC = () => {
     // State para voos, loading e mensagens (mesmo padrão)
     const [flights, setFlights] = useState<Flight[]>([]);
     const [loading, setLoading] = useState(true); // Começa true para buscar dados
@@ -64,7 +91,9 @@ const UserFlightList: React.FC = () => {
 
             try {
                 // Trocamos fetch 'POST' por 'GET'
-                const response = await fetch(API_URL); // Não precisa de body, headers, etc.
+                const response = await fetch(API_URL, {
+                    credentials: 'include',
+                });
 
                 if (response.ok) {
                     const data: Flight[] = await response.json();
@@ -99,7 +128,7 @@ const UserFlightList: React.FC = () => {
         
         // Mapeia os dados do state para o sub-componente FlightCard
         return flights.map(flight => (
-            <FlightCard key={flight.id} flight={flight} />
+            <FlightCard key={flight.userFlightId} flight={flight} />
         ));
     };
 
@@ -221,4 +250,4 @@ const styles: { [key: string]: React.CSSProperties } = {
     },
 };
 
-export default UserFlightList;
+export default UserFlights;

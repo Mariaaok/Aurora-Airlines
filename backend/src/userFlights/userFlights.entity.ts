@@ -7,8 +7,8 @@ import { Airports } from 'src/airports/airports.entity';
 @Entity('user_flights') 
 export class UserFlights {
   
-  @PrimaryGeneratedColumn('uuid') 
-  id: string;
+  @PrimaryGeneratedColumn() 
+  id: number;
 
   // --- Relação N:1 com Usuário ---
   // "Muitas reservas pertencem a UM usuário"

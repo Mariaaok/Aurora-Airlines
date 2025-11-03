@@ -61,7 +61,7 @@ const LoginScreen: React.FC = () => {
             if (user.type === 'admin') {
                 navigate('/admin/employees', { replace: true });
             } else {
-                navigate('/home', { replace: true }); 
+                navigate('/my-flights', { replace: true }); 
             }
         }
     }, [user, navigate]);

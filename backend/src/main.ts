@@ -10,11 +10,10 @@ async function bootstrap() {
     origin: 'http://localhost:3000', 
     credentials: true,
   });
-  await app.listen(5000);
 
   app.use(
-    session({
-      secret: 'STRONG-SESSION_SECRET',
+    session({                                                                                                                 
+      secret: 'STRONG_SESSION_SECRET',
       resave: false,
       saveUninitialized: false,
       cookie: {
@@ -27,5 +26,8 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.useGlobalPipes(new ValidationPipe());
+
+    await app.listen(5000);
 }
+
 bootstrap();

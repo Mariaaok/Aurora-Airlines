@@ -10,6 +10,7 @@ import AirportsPage from './pages/AirportsPage';
 import AdminAircraftTypesPage from './pages/AircraftTypesPage';
 import AdminFlightTypesPage from './pages/FlightTypesPage';
 import AdminFlightsPage from './pages/FlightsPage';
+import UserFlights from './pages/UserFlightsPage';
 
 function App() {
   return (
@@ -31,6 +32,8 @@ function App() {
       <Route path="/admin/flights" element={<AdminFlightsPage />} />
       
       <Route path="/home" element={<HomeScreen/>} />
+
+      <Route path="/my-flights" element={<UserFlights/>}/>
       
       <Route path="*" element={<h1>404 | Página Não Encontrada</h1>} />
     </Routes>
