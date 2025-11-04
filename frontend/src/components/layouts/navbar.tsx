@@ -54,9 +54,11 @@ export default function Navbar() {
 
       <div className="flex items-center space-x-3">
         {isAuthenticated && user?.type === 'admin' && (
+          <Link to="/admin/reports">
              <Button variant="outline" className="text-white border-white hover:bg-blue-800">
                 Reports
              </Button>
+            </Link>
         )}
         
         <Button 
