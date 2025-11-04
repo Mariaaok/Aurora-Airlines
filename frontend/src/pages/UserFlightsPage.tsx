@@ -32,6 +32,28 @@ interface FlightDetailModalProps {
 
 const FlightDetailModal: React.FC<FlightDetailModalProps> = ({ flight, onClose }) => {
     
+    const dateParts = flight.departureDate.split('-'); // ex: ["05", "10", "2025"]
+    const timeParts = flight.departureTime.split(':'); // ex: ["19", "35"]
+    
+    // new Date(ano, mêsIndexadoEmZero, dia, hora, minuto)
+    const departureDateTime = new Date(
+        parseInt(dateParts[0]),         // Ano: 2025
+        parseInt(dateParts[1]) - 1,   // Mês: 10 precisa virar 9 (Outubro)
+        parseInt(dateParts[2]),         // Dia: 05
+        parseInt(timeParts[0]),         // Hora: 19
+        parseInt(timeParts[1])          // Minuto: 35
+    );
+
+    // 2. Pegar a data e hora atuais
+    const now = new Date();
+
+    // 3. Calcular a diferença em milissegundos e depois em horas
+    const diffMs = departureDateTime.getTime() - now.getTime();
+    const diffHours = diffMs / (1000 * 60 * 60); // (ms * seg * min)
+
+    // 4. A condição final: O voo é cancelável se a diferença for maior que 24h
+    const isCancellable = diffHours > 24;
+
     // Impede que o clique no conteúdo do modal feche o modal
     const handleModalContentClick = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -103,9 +125,15 @@ const FlightDetailModal: React.FC<FlightDetailModalProps> = ({ flight, onClose }
 
                 {/* Rodapé do Modal */}
                 <div style={styles.modalFooter}>
-                    <button style={styles.cancelButton} onClick={handleCancelFlight}>
-                        Cancel flight
-                    </button>
+                    {isCancellable ? (
+                        <button style={styles.cancelButton} onClick={handleCancelFlight}>
+                            Cancel flight
+                        </button>
+                    ) : (
+                        <span style={styles.modalLabel}>
+                            Cancellation is only available up to 24 hours before departure.
+                        </span>
+                    )}
                 </div>
             </div>
         </div>
