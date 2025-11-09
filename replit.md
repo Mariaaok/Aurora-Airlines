@@ -21,6 +21,7 @@ This project was imported from GitHub and configured to run in the Replit enviro
 │   │   ├── employees/    # Employee management
 │   │   ├── flights/      # Flight operations
 │   │   ├── flightTypes/  # Flight type categories
+│   │   ├── purchases/    # Purchase records (completed bookings)
 │   │   ├── userFlights/  # User flight bookings
 │   │   └── users/        # User management
 │   ├── database.sqlite   # SQLite database
@@ -90,13 +91,28 @@ This script:
 ## Database Schema
 
 The application uses SQLite with TypeORM for the following entities:
-- Users (customers and admins)
-- Employees (pilots, flight attendants)
-- Aircrafts & Aircraft Types
-- Airports
-- Flights & Flight Types
-- User Flight Bookings (UserFlights)
-- Employee Flight Assignments
+- **Users** (customers and admins)
+- **Employees** (pilots, flight attendants)
+- **Aircrafts & Aircraft Types**
+- **Airports**
+- **Flights & Flight Types**
+- **User Flight Bookings** (UserFlights) - temporary bookings/reservations
+- **Purchases** - completed flight purchases with full passenger and payment data
+- **Employee Flight Assignments**
+
+### Purchases Entity
+Stores completed flight purchases with the following information:
+- User reference (FK to Users)
+- Departure flight reference (FK to Flights)
+- Departure seats (JSON array stored as text)
+- Return flight reference (FK to Flights, nullable)
+- Return seats (JSON array stored as text, nullable)
+- Passengers data (JSON with all passenger information)
+- Payment method ('credit_card' | 'bank_slip')
+- Payment details (JSON stored as text)
+- Total price (decimal with 2 decimal places)
+- Status ('pending' | 'confirmed' | 'cancelled')
+- Created timestamp
 
 ## Environment Variables
 
@@ -221,6 +237,28 @@ The project is configured for deployment with:
    - Search → Departure results → Departure details + seats → Auto-search return
    - Return results (with skip option) → Return details + seats OR Skip
    - **Passenger information** → Payment method selection → Payment details → Checkout
+
+### Purchases Database Entity (November 9, 2025)
+1. Created Purchases module (`backend/src/purchases/`) to store completed flight purchases:
+   - **Entity** (`purchases.entity.ts`): Defines database schema with relationships to User and Flights
+   - **Service** (`purchases.service.ts`): CRUD operations with proper relationship loading
+   - **Controller** (`purchases.controller.ts`): REST API endpoints with authentication
+   - **Module** (`purchases.module.ts`): NestJS module configuration
+2. Registered PurchasesModule in AppModule for database synchronization
+3. Entity fields follow project conventions:
+   - Foreign keys to User (userId) and Flights (departureFlightId, returnFlightId)
+   - JSON storage for seats, passengers, and payment details (stored as text)
+   - Status enum (pending, confirmed, cancelled)
+   - Decimal price field with precision
+   - Automatic timestamp tracking
+4. API endpoints available at `/purchases`:
+   - POST - Create new purchase (auto-assigns authenticated user)
+   - GET - List all purchases (admin)
+   - GET `/my-purchases` - User's own purchases
+   - GET `/:id` - Single purchase details
+   - PUT `/:id` - Update purchase
+   - DELETE `/:id` - Remove purchase
+5. All endpoints protected with SessionAuthGuard authentication
 
 ### Port Configuration
 - **Frontend**: Port 5000 (exposed to users via webview)
