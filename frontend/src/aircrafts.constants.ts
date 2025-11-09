@@ -1,6 +1,6 @@
 import { AircraftType } from "./aircraft-types.constants";
 
-export const API_BASE_URL = 'http://localhost:5000/aircrafts';
+export const API_BASE_URL = 'http://localhost:3001/aircrafts';
 
 export interface Aircraft {
     id: string; // ID único da aeronave (ex: A001)

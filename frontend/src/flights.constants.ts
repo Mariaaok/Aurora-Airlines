@@ -3,7 +3,7 @@ import { FlightType } from "./flight-types.constants";
 import { Airport } from "./airports.constants";
 import { Employee } from "./constants";
 
-export const API_BASE_URL = 'http://localhost:5000/flights';
+export const API_BASE_URL = 'http://localhost:3001/flights';
 
 // Estrutura para escalas
 export interface Transfer {

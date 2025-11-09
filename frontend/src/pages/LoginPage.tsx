@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom'; 
 
-const API_URL = 'http://localhost:5000/auth/login';
+const API_URL = 'http://localhost:3001/auth/login';
 
 interface LoginFormData {
     email: string;

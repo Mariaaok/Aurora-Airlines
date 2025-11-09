@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000';
+const API_URL = 'http://localhost:3001';
 export async function getUsers() {
   const res = await fetch(`${API_URL}/users`);
   if (!res.ok) throw new Error('Erro ao buscar usuários');

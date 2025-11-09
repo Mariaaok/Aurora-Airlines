@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://localhost:5000/flight-types';
+export const API_BASE_URL = 'http://localhost:3001/flight-types';
 
 export interface FlightType {
     id: number;

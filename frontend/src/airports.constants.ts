@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://localhost:5000/airports';
+export const API_BASE_URL = 'http://localhost:3001/airports';
 
 // Interface da Entidade Completa (baseada em airports.entity.ts)
 export interface Airport {

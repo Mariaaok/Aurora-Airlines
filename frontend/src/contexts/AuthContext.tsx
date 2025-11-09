@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
-const AUTH_STATUS_URL = 'http://localhost:5000/auth/status';
+const AUTH_STATUS_URL = 'http://localhost:3001/auth/status';
 
 interface User {
     id: number;

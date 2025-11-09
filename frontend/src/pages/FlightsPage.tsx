@@ -61,7 +61,7 @@ const AdminFlightsPage: React.FC = () => {
             axios.get<FlightType[]>(FLIGHT_TYPES_API),
             axios.get<AircraftType[]>(AIRCRAFT_TYPES_API),
             axios.get<Airport[]>(AIRPORTS_API),
-            axios.get<Employee[]>('http://localhost:5000/employees'),
+            axios.get<Employee[]>('http://localhost:3001/employees'),
             ]);
 
             const [

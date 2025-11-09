@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const API_URL = 'http://localhost:5000/users';
+const API_URL = 'http://localhost:3001/users';
 
 
 interface FullCreateUserDto {

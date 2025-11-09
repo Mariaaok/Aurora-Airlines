@@ -4,7 +4,7 @@ import Navbar from '../components/layouts/navbar';
 
 // 1. CONSTANTES E INTERFACES (Seguindo seu padrão)
 // Assumindo que a API de voos está neste endpoint
-const API_URL = 'http://localhost:5000/userFlights'; 
+const API_URL = 'http://localhost:3001/userFlights'; 
 
 // Interface para definir a estrutura de um voo, baseada na imagem
 interface Flight {

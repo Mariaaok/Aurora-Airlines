@@ -7,18 +7,19 @@ import passport = require('passport');
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: 'http://localhost:3000', 
+    origin: true,
     credentials: true,
   });
 
   app.use(
     session({                                                                                                                 
-      secret: 'STRONG_SESSION_SECRET',
+      secret: process.env.SESSION_SECRET || 'STRONG_SESSION_SECRET_CHANGE_IN_PRODUCTION',
       resave: false,
       saveUninitialized: false,
       cookie: {
         maxAge: 3600000,
         httpOnly: true,
+        sameSite: 'lax',
       },
     }),
   );
@@ -27,7 +28,7 @@ async function bootstrap() {
   app.use(passport.session());
   app.useGlobalPipes(new ValidationPipe());
 
-    await app.listen(5000);
+  await app.listen(3001, 'localhost');
 }
 
 bootstrap();
