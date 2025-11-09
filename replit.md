@@ -81,6 +81,7 @@ This script:
 
 ### User Features
 - **Account Creation**: Register as a new user
+- **Flight Search**: Post-login search page with glass morphism design to search for flights
 - **Flight Booking**: Browse and book available flights
 - **My Flights**: View booked flights and status
 - **Check-in**: Online check-in functionality
@@ -129,6 +130,15 @@ The project is configured for deployment with:
 8. Created combined startup script for both services
 9. Added proper .gitignore files
 10. Configured deployment settings for autoscale
+
+### Flight Search Page Implementation
+1. Created FlightSearchPage component (`frontend/src/pages/FlightSearchPage.tsx`) with glass morphism design
+2. Implemented search form with From, To, Departure Date, and Return Date fields
+3. Added backend API integration to POST search data to `/flights/search` endpoint
+4. Updated login flow to redirect regular users to `/search-flights` after successful authentication
+5. Added navbar with Aurora Airlines logo and Sign out button with proper session termination
+6. Configured aurora background image support with gradient fallback
+7. Styled components with rounded corners, shadows, and glass panel effects matching design requirements
 
 ### Port Configuration
 - **Frontend**: Port 5000 (exposed to users via webview)
