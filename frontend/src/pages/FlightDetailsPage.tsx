@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useBooking } from '../contexts/BookingContext';
 import { API_BASE_URL } from '../config';
 import { Flight } from '../flights.constants';
 import SeatSelectorModal from '../components/SeatSelectorModal';
@@ -13,19 +14,37 @@ interface LocationState {
         departureDate: string;
         returnDate: string;
     };
-    isOutbound: boolean;
+    isReturn: boolean;
 }
 
 const FlightDetailsPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { logout } = useAuth();
+    const { 
+        searchData: bookingSearchData,
+        setDepartureFlight,
+        setDepartureSeats,
+        setReturnFlight,
+        setReturnSeats,
+        departureSeats: savedDepartureSeats,
+        returnSeats: savedReturnSeats
+    } = useBooking();
     const state = location.state as LocationState;
 
     const flight = state?.flight;
-    const searchData = state?.searchData;
+    const searchData = state?.searchData || bookingSearchData;
+    const isReturn = state?.isReturn || false;
 
     const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (isReturn && savedReturnSeats.length > 0) {
+            setSelectedSeats(savedReturnSeats);
+        } else if (!isReturn && savedDepartureSeats.length > 0) {
+            setSelectedSeats(savedDepartureSeats);
+        }
+    }, [isReturn, savedDepartureSeats, savedReturnSeats]);
     const [isSeatModalOpen, setIsSeatModalOpen] = useState(false);
 
     if (!flight) {
@@ -61,17 +80,63 @@ const FlightDetailsPage: React.FC = () => {
         });
     };
 
-    const handleContinue = () => {
+    const handleContinue = async () => {
         if (selectedSeats.length === 0) {
             alert('Please select at least one seat before continuing.');
             return;
         }
 
-        console.log('Selected departure flight:', flight);
-        console.log('Selected seats:', selectedSeats);
-        console.log('Search data:', searchData);
-        
-        alert(`Departure flight and seats selected! In the next step, you would search for return flights from ${searchData?.to} to ${searchData?.from}.`);
+        if (!searchData) {
+            alert('Search data is missing. Please start over.');
+            navigate('/search-flights');
+            return;
+        }
+
+        if (isReturn) {
+            setReturnFlight(flight);
+            setReturnSeats(selectedSeats);
+            
+            console.log('Return flight and seats selected!');
+            navigate('/checkout');
+        } else {
+            setDepartureFlight(flight);
+            setDepartureSeats(selectedSeats);
+            
+            try {
+                const returnSearchData = {
+                    from: searchData.to,
+                    to: searchData.from,
+                    departureDate: searchData.returnDate,
+                    returnDate: searchData.returnDate
+                };
+
+                const response = await fetch(`${API_BASE_URL}/flights/search`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(returnSearchData),
+                    credentials: 'include',
+                });
+
+                if (response.ok) {
+                    const results = await response.json();
+                    navigate('/flight-results', { 
+                        state: { 
+                            results, 
+                            searchData: searchData,
+                            isReturn: true
+                        } 
+                    });
+                } else {
+                    console.error('Return flight search failed');
+                    alert('Failed to search for return flights. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error searching for return flights:', error);
+                alert('Error searching for return flights. Please try again.');
+            }
+        }
     };
 
     const formatTime = (time: string) => {

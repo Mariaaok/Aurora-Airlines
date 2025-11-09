@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useBooking } from '../contexts/BookingContext';
 import { API_BASE_URL } from '../config';
 
 interface SearchFormData {
@@ -13,6 +14,7 @@ interface SearchFormData {
 const FlightSearchPage: React.FC = () => {
     const navigate = useNavigate();
     const { logout } = useAuth();
+    const { setSearchData, clearBooking } = useBooking();
     const [formData, setFormData] = useState<SearchFormData>({
         from: '',
         to: '',
@@ -28,6 +30,9 @@ const FlightSearchPage: React.FC = () => {
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
         
+        clearBooking();
+        setSearchData(formData);
+        
         try {
             const response = await fetch(`${API_BASE_URL}/flights/search`, {
                 method: 'POST',
@@ -40,7 +45,7 @@ const FlightSearchPage: React.FC = () => {
 
             if (response.ok) {
                 const results = await response.json();
-                navigate('/flight-results', { state: { results, searchData: formData } });
+                navigate('/flight-results', { state: { results, searchData: formData, isReturn: false } });
             } else {
                 console.error('Search failed');
                 alert('Failed to search for flights. Please try again.');

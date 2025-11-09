@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useBooking } from '../contexts/BookingContext';
 import { API_BASE_URL } from '../config';
 import { Flight } from '../flights.constants';
 
@@ -12,16 +13,19 @@ interface LocationState {
         departureDate: string;
         returnDate: string;
     };
+    isReturn: boolean;
 }
 
 const FlightResultsPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { logout } = useAuth();
+    const { searchData: bookingSearchData } = useBooking();
     const state = location.state as LocationState;
 
     const results = state?.results || [];
-    const searchData = state?.searchData;
+    const searchData = state?.searchData || bookingSearchData;
+    const isReturn = state?.isReturn || false;
 
     const handleSignOut = async () => {
         try {
@@ -46,13 +50,18 @@ const FlightResultsPage: React.FC = () => {
             state: { 
                 flight, 
                 searchData,
-                isOutbound: true
+                isReturn
             } 
         });
     };
 
     const handleBackToSearch = () => {
         navigate('/search-flights');
+    };
+
+    const handleSkipReturn = () => {
+        console.log('Skipping return flight and proceeding to checkout');
+        navigate('/checkout');
     };
 
     const formatTime = (time: string) => {
@@ -72,12 +81,38 @@ const FlightResultsPage: React.FC = () => {
 
             <div style={styles.mainContent}>
                 <div style={styles.contentContainer}>
-                    <button onClick={handleBackToSearch} style={styles.backButton}>
-                        ← Go back to search
-                    </button>
+                    {!isReturn && (
+                        <button onClick={handleBackToSearch} style={styles.backButton}>
+                            ← Go back to search
+                        </button>
+                    )}
+
+                    {isReturn && searchData && (
+                        <div style={styles.routeDisplay}>
+                            <div style={styles.routeItem}>
+                                <span style={styles.planeIcon}>✈</span>
+                                <span style={styles.label}>From:</span>
+                                <span style={styles.city}>{searchData.to}</span>
+                            </div>
+                            <div style={styles.routeItem}>
+                                <span style={styles.personIcon}>👤</span>
+                                <span style={styles.label}>To:</span>
+                                <span style={styles.city}>{searchData.from}</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {isReturn && (
+                        <button onClick={handleBackToSearch} style={styles.searchAnotherLink}>
+                            Search for another flight
+                        </button>
+                    )}
 
                     <h1 style={styles.title}>
-                        Available departure flights from {searchData?.from} to {searchData?.to}
+                        {isReturn 
+                            ? 'Choose your return flight:' 
+                            : `Available departure flights from ${searchData?.from} to ${searchData?.to}`
+                        }
                     </h1>
 
                     <div style={styles.resultsContainer}>
@@ -120,11 +155,20 @@ const FlightResultsPage: React.FC = () => {
                                     </div>
 
                                     <div style={styles.flightFooter}>
+                                        <span style={styles.flightType}>{flight.flightType.name}</span>
                                         <span style={styles.date}>{flight.departureDate}</span>
                                         <span style={styles.selectButton}>Select →</span>
                                     </div>
                                 </div>
                             ))
+                        )}
+                        
+                        {isReturn && (
+                            <div style={styles.skipReturnContainer}>
+                                <button onClick={handleSkipReturn} style={styles.skipReturnButton}>
+                                    Skip return flight and proceed to checkout
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -295,6 +339,65 @@ const styles: { [key: string]: React.CSSProperties } = {
         fontWeight: '600',
         cursor: 'pointer',
         marginTop: '1rem',
+    },
+    routeDisplay: {
+        backgroundColor: 'white',
+        borderRadius: '12px',
+        padding: '1.5rem',
+        marginBottom: '1rem',
+        display: 'flex',
+        justifyContent: 'space-around',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    },
+    routeItem: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+    },
+    planeIcon: {
+        fontSize: '1.25rem',
+    },
+    personIcon: {
+        fontSize: '1.25rem',
+    },
+    label: {
+        fontSize: '0.95rem',
+        color: '#6b7280',
+    },
+    city: {
+        fontSize: '1rem',
+        fontWeight: '600',
+        color: '#1f2937',
+    },
+    searchAnotherLink: {
+        backgroundColor: 'transparent',
+        border: 'none',
+        color: '#1f2937',
+        fontSize: '0.95rem',
+        cursor: 'pointer',
+        marginBottom: '1.5rem',
+        padding: '0',
+        textDecoration: 'underline',
+    },
+    flightType: {
+        fontSize: '0.875rem',
+        color: '#6b7280',
+    },
+    skipReturnContainer: {
+        textAlign: 'center',
+        marginTop: '2rem',
+        paddingTop: '2rem',
+        borderTop: '2px solid #e5e7eb',
+    },
+    skipReturnButton: {
+        backgroundColor: 'transparent',
+        color: '#dc2626',
+        border: 'none',
+        fontSize: '0.95rem',
+        fontWeight: '600',
+        cursor: 'pointer',
+        textDecoration: 'underline',
+        padding: '0.5rem 1rem',
     },
 };
 

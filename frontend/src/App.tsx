@@ -15,6 +15,7 @@ import AdminReportsPage from './pages/AdminReportsPage';
 import FlightSearchPage from './pages/FlightSearchPage';
 import FlightResultsPage from './pages/FlightResultsPage';
 import FlightDetailsPage from './pages/FlightDetailsPage';
+import CheckoutPage from './pages/CheckoutPage';
 
 function App() {
   return (
@@ -44,6 +45,8 @@ function App() {
       <Route path="/flight-results" element={<FlightResultsPage/>} />
 
       <Route path="/flight-details" element={<FlightDetailsPage/>} />
+
+      <Route path="/checkout" element={<CheckoutPage/>} />
 
       <Route path="/my-flights" element={<UserFlights/>}/>
       
