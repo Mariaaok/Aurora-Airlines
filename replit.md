@@ -192,7 +192,11 @@ The project is configured for deployment with:
      * Security number (3-4 digits)
      * Installments dropdown (1, 2, or 3 installments with calculated amounts)
      * Debit/Credit radio buttons
-   - Bank slip payment form (placeholder, to be implemented)
+   - Bank slip payment form with:
+     * Bank name display: MulberryPay Holdings
+     * Bar code: 00000-09095-34343-19445
+     * "Print bank slip" button that generates and downloads PDF
+     * PDF includes complete booking details and payment instructions
    - Form validation with error messages and visual indicators
    - Confirm button appears only after payment method selection
    - Redirects to search if booking data is incomplete
