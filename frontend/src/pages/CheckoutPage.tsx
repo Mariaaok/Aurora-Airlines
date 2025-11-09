@@ -15,6 +15,8 @@ const CheckoutPage: React.FC = () => {
         passengerCount
     } = useBooking();
 
+    const [paymentMethod, setPaymentMethod] = useState<'credit_card' | 'bank_slip' | ''>('');
+    
     const [cardNumber, setCardNumber] = useState('');
     const [nameOnCard, setNameOnCard] = useState('');
     const [expirationDate, setExpirationDate] = useState('');
@@ -69,7 +71,7 @@ const CheckoutPage: React.FC = () => {
         return total.toFixed(2);
     };
 
-    const validateForm = () => {
+    const validateCreditCardForm = () => {
         const newErrors: {[key: string]: string} = {};
 
         if (!cardNumber) {
@@ -127,9 +129,14 @@ const CheckoutPage: React.FC = () => {
     };
 
     const handleConfirm = () => {
-        if (validateForm()) {
-            console.log('Payment confirmed!');
-            alert('Booking confirmed! (Backend integration pending)');
+        if (paymentMethod === 'credit_card') {
+            if (validateCreditCardForm()) {
+                console.log('Credit card payment confirmed!');
+                alert('Booking confirmed with credit card! (Backend integration pending)');
+            }
+        } else if (paymentMethod === 'bank_slip') {
+            console.log('Bank slip payment confirmed!');
+            alert('Booking confirmed with bank slip! (Backend integration pending)');
         }
     };
 
@@ -210,120 +217,139 @@ const CheckoutPage: React.FC = () => {
                             <span style={styles.priceValue}>{finalPrice} USD</span>
                         </div>
 
-                        <div style={styles.paymentSection}>
-                            <h3 style={styles.paymentTitle}>Payment method:</h3>
-                            
-                            <div style={styles.paymentMethodLabel}>
-                                Credit/debit card
-                            </div>
+                        <div style={styles.paymentMethodSection}>
+                            <h3 style={styles.paymentMethodTitle}>Payment method:</h3>
+                            <select
+                                value={paymentMethod}
+                                onChange={(e) => setPaymentMethod(e.target.value as 'credit_card' | 'bank_slip' | '')}
+                                style={styles.paymentMethodSelect}
+                            >
+                                <option value="">Select payment method</option>
+                                <option value="credit_card">Credit Card</option>
+                                <option value="bank_slip">Bank Slip</option>
+                            </select>
+                        </div>
 
-                            <div style={styles.formGrid}>
-                                <div style={styles.formGroup}>
-                                    <label style={styles.label}>Card number</label>
-                                    <input
-                                        type="text"
-                                        value={cardNumber}
-                                        onChange={(e) => handleCardNumberChange(e.target.value)}
-                                        placeholder="1234 5678 9012 3456"
-                                        style={{
-                                            ...styles.input,
-                                            ...(errors.cardNumber ? styles.inputError : {})
-                                        }}
-                                    />
-                                    {errors.cardNumber && <span style={styles.errorText}>{errors.cardNumber}</span>}
-                                </div>
+                        {paymentMethod === 'credit_card' && (
+                            <div style={styles.paymentDetailsSection}>
+                                <div style={styles.formGrid}>
+                                    <div style={styles.formGroup}>
+                                        <label style={styles.label}>Card number</label>
+                                        <input
+                                            type="text"
+                                            value={cardNumber}
+                                            onChange={(e) => handleCardNumberChange(e.target.value)}
+                                            placeholder="1234 5678 9012 3456"
+                                            style={{
+                                                ...styles.input,
+                                                ...(errors.cardNumber ? styles.inputError : {})
+                                            }}
+                                        />
+                                        {errors.cardNumber && <span style={styles.errorText}>{errors.cardNumber}</span>}
+                                    </div>
 
-                                <div style={styles.formGroup}>
-                                    <label style={styles.label}>Name on card</label>
-                                    <input
-                                        type="text"
-                                        value={nameOnCard}
-                                        onChange={(e) => setNameOnCard(e.target.value)}
-                                        placeholder="John Doe"
-                                        style={{
-                                            ...styles.input,
-                                            ...(errors.nameOnCard ? styles.inputError : {})
-                                        }}
-                                    />
-                                    {errors.nameOnCard && <span style={styles.errorText}>{errors.nameOnCard}</span>}
-                                </div>
+                                    <div style={styles.formGroup}>
+                                        <label style={styles.label}>Name on card</label>
+                                        <input
+                                            type="text"
+                                            value={nameOnCard}
+                                            onChange={(e) => setNameOnCard(e.target.value)}
+                                            placeholder="John Doe"
+                                            style={{
+                                                ...styles.input,
+                                                ...(errors.nameOnCard ? styles.inputError : {})
+                                            }}
+                                        />
+                                        {errors.nameOnCard && <span style={styles.errorText}>{errors.nameOnCard}</span>}
+                                    </div>
 
-                                <div style={styles.formGroup}>
-                                    <label style={styles.label}>Expiration date</label>
-                                    <input
-                                        type="text"
-                                        value={expirationDate}
-                                        onChange={(e) => handleExpirationDateChange(e.target.value)}
-                                        placeholder="MM/YY"
-                                        style={{
-                                            ...styles.input,
-                                            ...(errors.expirationDate ? styles.inputError : {})
-                                        }}
-                                    />
-                                    {errors.expirationDate && <span style={styles.errorText}>{errors.expirationDate}</span>}
-                                </div>
+                                    <div style={styles.formGroup}>
+                                        <label style={styles.label}>Expiration date</label>
+                                        <input
+                                            type="text"
+                                            value={expirationDate}
+                                            onChange={(e) => handleExpirationDateChange(e.target.value)}
+                                            placeholder="MM/YY"
+                                            style={{
+                                                ...styles.input,
+                                                ...(errors.expirationDate ? styles.inputError : {})
+                                            }}
+                                        />
+                                        {errors.expirationDate && <span style={styles.errorText}>{errors.expirationDate}</span>}
+                                    </div>
 
-                                <div style={styles.formGroup}>
-                                    <label style={styles.label}>Security number</label>
-                                    <input
-                                        type="text"
-                                        value={securityNumber}
-                                        onChange={(e) => handleSecurityNumberChange(e.target.value)}
-                                        placeholder="123"
-                                        style={{
-                                            ...styles.input,
-                                            ...(errors.securityNumber ? styles.inputError : {})
-                                        }}
-                                    />
-                                    {errors.securityNumber && <span style={styles.errorText}>{errors.securityNumber}</span>}
-                                </div>
+                                    <div style={styles.formGroup}>
+                                        <label style={styles.label}>Security number</label>
+                                        <input
+                                            type="text"
+                                            value={securityNumber}
+                                            onChange={(e) => handleSecurityNumberChange(e.target.value)}
+                                            placeholder="123"
+                                            style={{
+                                                ...styles.input,
+                                                ...(errors.securityNumber ? styles.inputError : {})
+                                            }}
+                                        />
+                                        {errors.securityNumber && <span style={styles.errorText}>{errors.securityNumber}</span>}
+                                    </div>
 
-                                <div style={styles.formGroup}>
-                                    <label style={styles.label}>Installments</label>
-                                    <select
-                                        value={installments}
-                                        onChange={(e) => setInstallments(e.target.value)}
-                                        style={styles.select}
-                                    >
-                                        <option value="1">1x of {finalPrice} USD</option>
-                                        <option value="2">2x of {(parseFloat(finalPrice) / 2).toFixed(2)} USD</option>
-                                        <option value="3">3x of {(parseFloat(finalPrice) / 3).toFixed(2)} USD</option>
-                                    </select>
-                                </div>
+                                    <div style={styles.formGroup}>
+                                        <label style={styles.label}>Installments</label>
+                                        <select
+                                            value={installments}
+                                            onChange={(e) => setInstallments(e.target.value)}
+                                            style={styles.select}
+                                        >
+                                            <option value="1">1x of {finalPrice} USD</option>
+                                            <option value="2">2x of {(parseFloat(finalPrice) / 2).toFixed(2)} USD</option>
+                                            <option value="3">3x of {(parseFloat(finalPrice) / 3).toFixed(2)} USD</option>
+                                        </select>
+                                    </div>
 
-                                <div style={styles.formGroup}>
-                                    <div style={styles.radioGroup}>
-                                        <label style={styles.radioLabel}>
-                                            <input
-                                                type="radio"
-                                                value="debit"
-                                                checked={paymentType === 'debit'}
-                                                onChange={() => setPaymentType('debit')}
-                                                style={styles.radio}
-                                            />
-                                            Debit
-                                        </label>
-                                        <label style={styles.radioLabel}>
-                                            <input
-                                                type="radio"
-                                                value="credit"
-                                                checked={paymentType === 'credit'}
-                                                onChange={() => setPaymentType('credit')}
-                                                style={styles.radio}
-                                            />
-                                            Credit
-                                        </label>
+                                    <div style={styles.formGroup}>
+                                        <div style={styles.radioGroup}>
+                                            <label style={styles.radioLabel}>
+                                                <input
+                                                    type="radio"
+                                                    value="debit"
+                                                    checked={paymentType === 'debit'}
+                                                    onChange={() => setPaymentType('debit')}
+                                                    style={styles.radio}
+                                                />
+                                                Debit
+                                            </label>
+                                            <label style={styles.radioLabel}>
+                                                <input
+                                                    type="radio"
+                                                    value="credit"
+                                                    checked={paymentType === 'credit'}
+                                                    onChange={() => setPaymentType('credit')}
+                                                    style={styles.radio}
+                                                />
+                                                Credit
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
+
+                        {paymentMethod === 'bank_slip' && (
+                            <div style={styles.paymentDetailsSection}>
+                                <div style={styles.placeholderMessage}>
+                                    Bank slip details will be implemented here
+                                </div>
+                            </div>
+                        )}
                     </div>
 
-                    <div style={styles.buttonContainer}>
-                        <button onClick={handleConfirm} style={styles.confirmButton}>
-                            Confirm
-                        </button>
-                    </div>
+                    {paymentMethod && (
+                        <div style={styles.buttonContainer}>
+                            <button onClick={handleConfirm} style={styles.confirmButton}>
+                                Confirm
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
@@ -441,23 +467,30 @@ const styles: { [key: string]: React.CSSProperties } = {
         fontWeight: '700',
         color: '#1f2937',
     },
-    paymentSection: {
+    paymentMethodSection: {
         marginTop: '2rem',
+        marginBottom: '1.5rem',
     },
-    paymentTitle: {
+    paymentMethodTitle: {
         fontSize: '1.125rem',
         fontWeight: '600',
         marginBottom: '1rem',
         color: '#1f2937',
     },
-    paymentMethodLabel: {
-        fontSize: '0.875rem',
-        color: '#6b7280',
-        marginBottom: '1.5rem',
-        textAlign: 'center',
-        padding: '0.5rem',
+    paymentMethodSelect: {
+        width: '100%',
+        padding: '0.75rem',
         border: '1px solid #d1d5db',
         borderRadius: '4px',
+        fontSize: '0.875rem',
+        outline: 'none',
+        backgroundColor: 'white',
+        cursor: 'pointer',
+    },
+    paymentDetailsSection: {
+        marginTop: '2rem',
+        paddingTop: '2rem',
+        borderTop: '1px solid #e5e7eb',
     },
     formGrid: {
         display: 'grid',
@@ -531,6 +564,14 @@ const styles: { [key: string]: React.CSSProperties } = {
         fontWeight: '600',
         cursor: 'pointer',
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    },
+    placeholderMessage: {
+        padding: '2rem',
+        textAlign: 'center',
+        color: '#6b7280',
+        backgroundColor: '#f9fafb',
+        borderRadius: '8px',
+        border: '2px dashed #d1d5db',
     },
 };
 
