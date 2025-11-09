@@ -97,7 +97,7 @@ const FlightDetailsPage: React.FC = () => {
             setReturnSeats(selectedSeats);
             
             console.log('Return flight and seats selected!');
-            navigate('/checkout');
+            navigate('/passenger-info');
         } else {
             setDepartureFlight(flight);
             setDepartureSeats(selectedSeats);

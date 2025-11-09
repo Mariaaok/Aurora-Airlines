@@ -60,8 +60,8 @@ const FlightResultsPage: React.FC = () => {
     };
 
     const handleSkipReturn = () => {
-        console.log('Skipping return flight and proceeding to checkout');
-        navigate('/checkout');
+        console.log('Skipping return flight and proceeding to passenger info');
+        navigate('/passenger-info');
     };
 
     const formatTime = (time: string) => {

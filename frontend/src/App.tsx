@@ -15,6 +15,7 @@ import AdminReportsPage from './pages/AdminReportsPage';
 import FlightSearchPage from './pages/FlightSearchPage';
 import FlightResultsPage from './pages/FlightResultsPage';
 import FlightDetailsPage from './pages/FlightDetailsPage';
+import PassengerInfoPage from './pages/PassengerInfoPage';
 import CheckoutPage from './pages/CheckoutPage';
 
 function App() {
@@ -45,6 +46,8 @@ function App() {
       <Route path="/flight-results" element={<FlightResultsPage/>} />
 
       <Route path="/flight-details" element={<FlightDetailsPage/>} />
+
+      <Route path="/passenger-info" element={<PassengerInfoPage/>} />
 
       <Route path="/checkout" element={<CheckoutPage/>} />
 
