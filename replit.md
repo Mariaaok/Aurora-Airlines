@@ -178,12 +178,20 @@ The project is configured for deployment with:
    - SeatSelectorModal (`frontend/src/components/SeatSelectorModal.tsx`) - Modal wrapper
    - Reuses existing SeatMapViewer component for consistency
 
-6. Implemented CheckoutPage (`frontend/src/pages/CheckoutPage.tsx`):
-   - Displays complete booking summary with departure and return flight details
-   - Shows passenger count derived from selected seats
-   - Displays selected seats for both flights
-   - Placeholder for passenger detail forms (one per passenger)
-   - Placeholder for payment integration
+6. Implemented CheckoutPage (`frontend/src/pages/CheckoutPage.tsx`) with complete payment form:
+   - Flight details display with route, dates, times, duration, and flight type
+   - Automatic price calculation based on passenger count and flight type (international vs domestic)
+   - Base price: $350 per passenger (2x for international flights)
+   - Includes both departure and return flights if applicable
+   - Complete payment form with validation:
+     * Card number (16 digits, auto-formatted with spaces)
+     * Name on card (letters only)
+     * Expiration date (MM/YY format with auto-formatting)
+     * Security number (3-4 digits)
+     * Installments dropdown (1, 2, or 3 installments with calculated amounts)
+     * Debit/Credit radio buttons
+   - Form validation with error messages and visual indicators
+   - Confirm button triggers validation before submission
    - Redirects to search if booking data is incomplete
 
 7. Complete booking flow:
