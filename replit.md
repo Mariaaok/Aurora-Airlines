@@ -178,7 +178,23 @@ The project is configured for deployment with:
    - SeatSelectorModal (`frontend/src/components/SeatSelectorModal.tsx`) - Modal wrapper
    - Reuses existing SeatMapViewer component for consistency
 
-6. Implemented CheckoutPage (`frontend/src/pages/CheckoutPage.tsx`) with dynamic payment method selection:
+6. Created PassengerInfoPage (`frontend/src/pages/PassengerInfoPage.tsx`) for collecting passenger details:
+   - Appears after flight and seat selection, before payment
+   - Displays passenger forms based on number of seats selected
+   - Separate sections for "Departure Flight" and "Return Flight" (if applicable)
+   - Each passenger form includes:
+     * Full name (text input)
+     * Birthday (yyyy-mm-dd format)
+     * Phone number (with country code)
+     * CPF (Brazilian tax ID - numbers only)
+     * E-mail
+     * RG (Brazilian ID - numbers only)
+   - Forms arranged in 2-column grid layout
+   - Scrollable container (max-height 400px) for multiple passengers
+   - Price summary showing total cost and passenger count
+   - "Go to checkout" button navigates to payment selection
+
+7. Implemented CheckoutPage (`frontend/src/pages/CheckoutPage.tsx`) with dynamic payment method selection:
    - Flight details display with route, dates, times, duration, and flight type
    - Automatic price calculation based on passenger count and flight type (international vs domestic)
    - Base price: $350 per passenger (2x for international flights)
@@ -201,10 +217,10 @@ The project is configured for deployment with:
    - Confirm button appears only after payment method selection
    - Redirects to search if booking data is incomplete
 
-7. Complete booking flow:
+8. Complete booking flow:
    - Search → Departure results → Departure details + seats → Auto-search return
    - Return results (with skip option) → Return details + seats OR Skip
-   - Checkout with booking summary and passenger count
+   - **Passenger information** → Payment method selection → Payment details → Checkout
 
 ### Port Configuration
 - **Frontend**: Port 5000 (exposed to users via webview)
