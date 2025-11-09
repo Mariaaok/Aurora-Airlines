@@ -53,3 +53,72 @@ The frontend features a modern design with:
 - **Radix UI**: UI component library (used in frontend).
 - **bcrypt**: Password hashing library.
 - **Express Session**: Session management for Node.js.
+- **jsPDF**: PDF generation library (for bank slip generation).
+
+## Recent Changes
+
+### Passenger Information Collection (November 9, 2025)
+1. Created PassengerInfoPage between seat selection and payment checkout
+2. Collects passenger details for all selected seats (departure + return)
+3. Form fields: Full Name, Birthday, Phone, CPF, Email, RG
+4. Integrated with BookingContext to persist data through booking flow
+5. Separate scrollable sections for departure and return passengers
+
+### Purchases Database Entity (November 9, 2025)
+1. Created Purchases module (`backend/src/purchases/`) to store completed flight purchases
+2. Entity includes relationships to User and Flights with JSON storage for seats/passengers/payment
+3. REST API endpoints with SessionAuthGuard authentication
+4. All purchase endpoints available at `/purchases`
+
+### Purchase Creation Flow Integration (November 9, 2025)
+1. Updated BookingContext to manage passenger data throughout the booking flow
+2. Updated PassengerInfoPage to persist passenger information
+3. Implemented purchase creation in CheckoutPage:
+   - Credit Card "Confirm" button creates purchase record
+   - Bank Slip confirmation creates purchase record
+   - Payment data stored securely (only last 4 card digits, no CVV or full numbers for PCI compliance)
+   - Shows success confirmation with purchase ID
+   - Clears booking context and returns user to search page
+
+### Port Configuration (November 9, 2025)
+
+**Automatic Environment Detection:**
+The project automatically detects whether it's running in Replit or local development (VS Code) and configures ports accordingly:
+
+**In Replit:**
+- Frontend: Port 5000 (exposed via webview)
+- Backend: Port 3001 (internal API)
+
+**In Local Development (VS Code):**
+- Frontend: Port 3000 (React default)
+- Backend: Port 5000 (original team configuration)
+
+**Implementation:**
+- `start.sh` detects environment via `REPL_ID` variable
+- Sets `BACKEND_PORT` and `PORT` environment variables accordingly
+- Frontend config (`config.ts`) auto-detects Replit vs local for API URL
+- No manual configuration required for team members
+- See `PORT_CONFIGURATION.md` for complete setup instructions
+
+## Known Issues
+
+- The application has some ESLint warnings (unused variables) but these don't affect functionality
+- The database comes with existing data (database.sqlite already in repo)
+
+## Technologies Used
+
+### Backend
+- NestJS 11
+- TypeORM
+- SQLite
+- Passport.js (Local Strategy)
+- Express Session
+- bcrypt (password hashing)
+
+### Frontend
+- React 19
+- React Router
+- Axios (HTTP client)
+- Tailwind CSS
+- Radix UI components
+- jsPDF (PDF generation)
