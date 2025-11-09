@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useBooking } from '../contexts/BookingContext';
 import { API_BASE_URL } from '../config';
-import jsPDF from 'jspdf';
 
 const CheckoutPage: React.FC = () => {
     const navigate = useNavigate();
@@ -194,36 +193,13 @@ const CheckoutPage: React.FC = () => {
         }
     };
 
-    const generateBankSlipPDF = () => {
-        const doc = new jsPDF();
-        const bankName = 'MulberryPay Holdings';
-        const barCode = '00000-09095-34343-19445';
-        
-        doc.setFontSize(20);
-        doc.text('Aurora Airlines - Bank Slip', 20, 20);
-        
-        doc.setFontSize(12);
-        doc.text('Payment Details', 20, 40);
-        
-        doc.setFontSize(10);
-        doc.text(`Bank: ${bankName}`, 20, 55);
-        doc.text(`Bar Code: ${barCode}`, 20, 65);
-        doc.text(`Amount: ${finalPrice} USD`, 20, 75);
-        
-        doc.text('Flight Details:', 20, 95);
-        doc.text(`Route: ${departureFlight.originAirport.city} → ${departureFlight.destinationAirport.city}`, 20, 105);
-        doc.text(`Departure: ${departureFlight.departureDate} at ${formatTime(departureFlight.departureTime)}`, 20, 115);
-        doc.text(`Passengers: ${passengerCount}`, 20, 125);
-        
-        if (returnFlight) {
-            doc.text(`Return: ${returnFlight.originAirport.city} → ${returnFlight.destinationAirport.city}`, 20, 135);
-            doc.text(`Return Date: ${returnFlight.departureDate} at ${formatTime(returnFlight.departureTime)}`, 20, 145);
-        }
-        
-        doc.text('Please pay this amount at any MulberryPay Holdings branch or authorized agent.', 20, 170);
-        doc.text('This bank slip is valid for 3 days from the issue date.', 20, 180);
-        
-        doc.save('aurora-airlines-bank-slip.pdf');
+    const downloadBankSlipPDF = () => {
+        const link = document.createElement('a');
+        link.href = '/thanks-for-the-purchase.pdf';
+        link.download = 'thanks-for-the-purchase.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     const finalPrice = calculatePrice();
@@ -433,8 +409,8 @@ const CheckoutPage: React.FC = () => {
                                     </div>
                                 </div>
                                 <div style={styles.printButtonContainer}>
-                                    <button onClick={generateBankSlipPDF} style={styles.printButton}>
-                                        Print bank slip
+                                    <button onClick={downloadBankSlipPDF} style={styles.printButton}>
+                                        Download receipt
                                     </button>
                                 </div>
                             </div>
