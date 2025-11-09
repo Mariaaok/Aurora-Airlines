@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useBooking } from '../contexts/BookingContext';
@@ -8,13 +8,20 @@ const CheckoutPage: React.FC = () => {
     const navigate = useNavigate();
     const { logout } = useAuth();
     const {
-        searchData,
         departureFlight,
         departureSeats,
         returnFlight,
         returnSeats,
         passengerCount
     } = useBooking();
+
+    const [cardNumber, setCardNumber] = useState('');
+    const [nameOnCard, setNameOnCard] = useState('');
+    const [expirationDate, setExpirationDate] = useState('');
+    const [securityNumber, setSecurityNumber] = useState('');
+    const [installments, setInstallments] = useState('1');
+    const [paymentType, setPaymentType] = useState<'debit' | 'credit'>('credit');
+    const [errors, setErrors] = useState<{[key: string]: string}>({});
 
     if (!departureFlight || departureSeats.length === 0) {
         navigate('/search-flights');
@@ -43,6 +50,91 @@ const CheckoutPage: React.FC = () => {
         return time.substring(0, 5);
     };
 
+    const formatDate = (dateStr: string) => {
+        const [year, month, day] = dateStr.split('-');
+        return `${day}/${month}`;
+    };
+
+    const calculatePrice = () => {
+        const basePrice = 350;
+        const internationalMultiplier = departureFlight.flightType.name.toLowerCase().includes('international') ? 2 : 1;
+        
+        let total = basePrice * internationalMultiplier * passengerCount;
+        
+        if (returnFlight) {
+            const returnInternational = returnFlight.flightType.name.toLowerCase().includes('international') ? 2 : 1;
+            total += basePrice * returnInternational * passengerCount;
+        }
+        
+        return total.toFixed(2);
+    };
+
+    const validateForm = () => {
+        const newErrors: {[key: string]: string} = {};
+
+        if (!cardNumber) {
+            newErrors.cardNumber = 'Card number is required';
+        } else if (!/^\d{16}$/.test(cardNumber.replace(/\s/g, ''))) {
+            newErrors.cardNumber = 'Card number must be 16 digits';
+        }
+
+        if (!nameOnCard) {
+            newErrors.nameOnCard = 'Name on card is required';
+        } else if (!/^[a-zA-Z\s]+$/.test(nameOnCard)) {
+            newErrors.nameOnCard = 'Name must contain only letters';
+        }
+
+        if (!expirationDate) {
+            newErrors.expirationDate = 'Expiration date is required';
+        } else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expirationDate)) {
+            newErrors.expirationDate = 'Format must be MM/YY';
+        }
+
+        if (!securityNumber) {
+            newErrors.securityNumber = 'Security number is required';
+        } else if (!/^\d{3,4}$/.test(securityNumber)) {
+            newErrors.securityNumber = 'Security number must be 3-4 digits';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleCardNumberChange = (value: string) => {
+        const cleaned = value.replace(/\D/g, '');
+        if (cleaned.length <= 16) {
+            const formatted = cleaned.replace(/(\d{4})(?=\d)/g, '$1 ');
+            setCardNumber(formatted);
+        }
+    };
+
+    const handleExpirationDateChange = (value: string) => {
+        const cleaned = value.replace(/\D/g, '');
+        if (cleaned.length <= 4) {
+            if (cleaned.length >= 2) {
+                setExpirationDate(cleaned.substring(0, 2) + '/' + cleaned.substring(2));
+            } else {
+                setExpirationDate(cleaned);
+            }
+        }
+    };
+
+    const handleSecurityNumberChange = (value: string) => {
+        const cleaned = value.replace(/\D/g, '');
+        if (cleaned.length <= 4) {
+            setSecurityNumber(cleaned);
+        }
+    };
+
+    const handleConfirm = () => {
+        if (validateForm()) {
+            console.log('Payment confirmed!');
+            alert('Booking confirmed! (Backend integration pending)');
+        }
+    };
+
+    const finalPrice = calculatePrice();
+
     return (
         <div style={styles.pageContainer}>
             <nav style={styles.navbar}>
@@ -56,52 +148,181 @@ const CheckoutPage: React.FC = () => {
 
             <div style={styles.mainContent}>
                 <div style={styles.contentContainer}>
-                    <h1 style={styles.title}>Checkout & Passenger Details</h1>
-                    
                     <div style={styles.card}>
-                        <h2 style={styles.cardTitle}>Booking Summary</h2>
+                        <h2 style={styles.sectionTitle}>Details:</h2>
                         
-                        <div style={styles.section}>
-                            <h3 style={styles.sectionTitle}>Departure Flight</h3>
-                            <p><strong>Flight:</strong> {departureFlight.flightNumber}</p>
-                            <p><strong>Route:</strong> {departureFlight.originAirport.city} ({departureFlight.originAirport.IATA}) → {departureFlight.destinationAirport.city} ({departureFlight.destinationAirport.IATA})</p>
-                            <p><strong>Departure:</strong> {departureFlight.departureDate} at {formatTime(departureFlight.departureTime)}</p>
-                            <p><strong>Arrival:</strong> {departureFlight.arrivalDate} at {formatTime(departureFlight.arrivalTime)}</p>
-                            <p><strong>Aircraft:</strong> {departureFlight.aircraftType.type}</p>
-                            <p><strong>Seats:</strong> {departureSeats.join(', ')}</p>
+                        <div style={styles.flightDetails}>
+                            <div style={styles.routeInfo}>
+                                <div style={styles.routeSection}>
+                                    <span style={styles.cityDate}>
+                                        {departureFlight.originAirport.city} ({formatDate(departureFlight.departureDate)})
+                                    </span>
+                                    <span style={styles.time}>{formatTime(departureFlight.departureTime)}</span>
+                                </div>
+                                
+                                <span style={styles.arrow}>→</span>
+                                
+                                <div style={styles.routeSection}>
+                                    <span style={styles.cityDate}>
+                                        {departureFlight.destinationAirport.city} ({formatDate(departureFlight.arrivalDate)})
+                                    </span>
+                                    <span style={styles.time}>{formatTime(departureFlight.arrivalTime)}</span>
+                                </div>
+                            </div>
+                            
+                            <div style={styles.flightInfo}>
+                                {departureFlight.flightType.name} - Duration: {departureFlight.estimatedDuration}
+                            </div>
+                            
+                            {returnFlight && (
+                                <>
+                                    <div style={styles.routeInfo}>
+                                        <div style={styles.routeSection}>
+                                            <span style={styles.cityDate}>
+                                                {returnFlight.originAirport.city} ({formatDate(returnFlight.departureDate)})
+                                            </span>
+                                            <span style={styles.time}>{formatTime(returnFlight.departureTime)}</span>
+                                        </div>
+                                        
+                                        <span style={styles.arrow}>→</span>
+                                        
+                                        <div style={styles.routeSection}>
+                                            <span style={styles.cityDate}>
+                                                {returnFlight.destinationAirport.city} ({formatDate(returnFlight.arrivalDate)})
+                                            </span>
+                                            <span style={styles.time}>{formatTime(returnFlight.arrivalTime)}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style={styles.flightInfo}>
+                                        {returnFlight.flightType.name} - Duration: {returnFlight.estimatedDuration}
+                                    </div>
+                                </>
+                            )}
+                            
+                            <div style={styles.passengers}>
+                                {passengerCount} passenger{passengerCount > 1 ? 's' : ''}
+                            </div>
                         </div>
 
-                        {returnFlight && (
-                            <div style={styles.section}>
-                                <h3 style={styles.sectionTitle}>Return Flight</h3>
-                                <p><strong>Flight:</strong> {returnFlight.flightNumber}</p>
-                                <p><strong>Route:</strong> {returnFlight.originAirport.city} ({returnFlight.originAirport.IATA}) → {returnFlight.destinationAirport.city} ({returnFlight.destinationAirport.IATA})</p>
-                                <p><strong>Departure:</strong> {returnFlight.departureDate} at {formatTime(returnFlight.departureTime)}</p>
-                                <p><strong>Arrival:</strong> {returnFlight.arrivalDate} at {formatTime(returnFlight.arrivalTime)}</p>
-                                <p><strong>Aircraft:</strong> {returnFlight.aircraftType.type}</p>
-                                <p><strong>Seats:</strong> {returnSeats.join(', ')}</p>
-                            </div>
-                        )}
+                        <div style={styles.priceSection}>
+                            <span style={styles.priceLabel}>Final Price</span>
+                            <span style={styles.priceValue}>{finalPrice} USD</span>
+                        </div>
 
-                        {!returnFlight && (
-                            <div style={styles.section}>
-                                <p style={styles.oneWayNotice}>One-way trip (no return flight selected)</p>
+                        <div style={styles.paymentSection}>
+                            <h3 style={styles.paymentTitle}>Payment method:</h3>
+                            
+                            <div style={styles.paymentMethodLabel}>
+                                Credit/debit card
                             </div>
-                        )}
 
-                        <div style={styles.section}>
-                            <h3 style={styles.sectionTitle}>Passengers</h3>
-                            <p><strong>Number of passengers:</strong> {passengerCount}</p>
-                            <p style={styles.notice}>
-                                Passenger detail forms will appear here (one form per passenger).
-                                Each passenger will need to provide their personal information.
-                            </p>
+                            <div style={styles.formGrid}>
+                                <div style={styles.formGroup}>
+                                    <label style={styles.label}>Card number</label>
+                                    <input
+                                        type="text"
+                                        value={cardNumber}
+                                        onChange={(e) => handleCardNumberChange(e.target.value)}
+                                        placeholder="1234 5678 9012 3456"
+                                        style={{
+                                            ...styles.input,
+                                            ...(errors.cardNumber ? styles.inputError : {})
+                                        }}
+                                    />
+                                    {errors.cardNumber && <span style={styles.errorText}>{errors.cardNumber}</span>}
+                                </div>
+
+                                <div style={styles.formGroup}>
+                                    <label style={styles.label}>Name on card</label>
+                                    <input
+                                        type="text"
+                                        value={nameOnCard}
+                                        onChange={(e) => setNameOnCard(e.target.value)}
+                                        placeholder="John Doe"
+                                        style={{
+                                            ...styles.input,
+                                            ...(errors.nameOnCard ? styles.inputError : {})
+                                        }}
+                                    />
+                                    {errors.nameOnCard && <span style={styles.errorText}>{errors.nameOnCard}</span>}
+                                </div>
+
+                                <div style={styles.formGroup}>
+                                    <label style={styles.label}>Expiration date</label>
+                                    <input
+                                        type="text"
+                                        value={expirationDate}
+                                        onChange={(e) => handleExpirationDateChange(e.target.value)}
+                                        placeholder="MM/YY"
+                                        style={{
+                                            ...styles.input,
+                                            ...(errors.expirationDate ? styles.inputError : {})
+                                        }}
+                                    />
+                                    {errors.expirationDate && <span style={styles.errorText}>{errors.expirationDate}</span>}
+                                </div>
+
+                                <div style={styles.formGroup}>
+                                    <label style={styles.label}>Security number</label>
+                                    <input
+                                        type="text"
+                                        value={securityNumber}
+                                        onChange={(e) => handleSecurityNumberChange(e.target.value)}
+                                        placeholder="123"
+                                        style={{
+                                            ...styles.input,
+                                            ...(errors.securityNumber ? styles.inputError : {})
+                                        }}
+                                    />
+                                    {errors.securityNumber && <span style={styles.errorText}>{errors.securityNumber}</span>}
+                                </div>
+
+                                <div style={styles.formGroup}>
+                                    <label style={styles.label}>Installments</label>
+                                    <select
+                                        value={installments}
+                                        onChange={(e) => setInstallments(e.target.value)}
+                                        style={styles.select}
+                                    >
+                                        <option value="1">1x of {finalPrice} USD</option>
+                                        <option value="2">2x of {(parseFloat(finalPrice) / 2).toFixed(2)} USD</option>
+                                        <option value="3">3x of {(parseFloat(finalPrice) / 3).toFixed(2)} USD</option>
+                                    </select>
+                                </div>
+
+                                <div style={styles.formGroup}>
+                                    <div style={styles.radioGroup}>
+                                        <label style={styles.radioLabel}>
+                                            <input
+                                                type="radio"
+                                                value="debit"
+                                                checked={paymentType === 'debit'}
+                                                onChange={() => setPaymentType('debit')}
+                                                style={styles.radio}
+                                            />
+                                            Debit
+                                        </label>
+                                        <label style={styles.radioLabel}>
+                                            <input
+                                                type="radio"
+                                                value="credit"
+                                                checked={paymentType === 'credit'}
+                                                onChange={() => setPaymentType('credit')}
+                                                style={styles.radio}
+                                            />
+                                            Credit
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div style={styles.placeholder}>
-                        <p>🚧 Passenger detail forms and payment integration will be implemented here</p>
-                        <p>Each of the {passengerCount} passenger(s) will have a dedicated form to fill out their details.</p>
+                    <div style={styles.buttonContainer}>
+                        <button onClick={handleConfirm} style={styles.confirmButton}>
+                            Confirm
+                        </button>
                     </div>
                 </div>
             </div>
@@ -114,7 +335,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: '#f3f4f6',
+        backgroundColor: '#e5e7eb',
     },
     navbar: {
         backgroundColor: '#1e3a5f',
@@ -145,60 +366,171 @@ const styles: { [key: string]: React.CSSProperties } = {
     mainContent: {
         flex: 1,
         padding: '2rem',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'flex-start',
     },
     contentContainer: {
-        maxWidth: '1000px',
-        margin: '0 auto',
-    },
-    title: {
-        fontSize: '2rem',
-        fontWeight: '700',
-        color: '#1f2937',
-        marginBottom: '2rem',
+        width: '100%',
+        maxWidth: '600px',
     },
     card: {
         backgroundColor: 'white',
-        borderRadius: '12px',
+        borderRadius: '8px',
         padding: '2rem',
-        marginBottom: '2rem',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-    },
-    cardTitle: {
-        fontSize: '1.5rem',
-        fontWeight: '600',
-        marginBottom: '1.5rem',
-        color: '#1f2937',
-    },
-    section: {
-        marginBottom: '2rem',
-        paddingBottom: '1.5rem',
-        borderBottom: '1px solid #e5e7eb',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
     },
     sectionTitle: {
-        fontSize: '1.25rem',
+        fontSize: '1.125rem',
         fontWeight: '600',
         marginBottom: '1rem',
-        color: '#1e3a5f',
+        color: '#1f2937',
     },
-    oneWayNotice: {
-        fontStyle: 'italic',
+    flightDetails: {
+        marginBottom: '1.5rem',
+    },
+    routeInfo: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: '0.5rem',
+    },
+    routeSection: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '0.25rem',
+    },
+    cityDate: {
+        fontSize: '0.875rem',
+        color: '#1f2937',
+    },
+    time: {
+        fontSize: '1.125rem',
+        fontWeight: '600',
+        color: '#1f2937',
+    },
+    arrow: {
+        fontSize: '1.5rem',
         color: '#6b7280',
     },
-    notice: {
-        marginTop: '1rem',
-        padding: '1rem',
-        backgroundColor: '#f3f4f6',
-        borderRadius: '8px',
+    flightInfo: {
+        fontSize: '0.875rem',
         color: '#6b7280',
-        fontSize: '0.95rem',
+        marginBottom: '1rem',
     },
-    placeholder: {
-        backgroundColor: '#fef3c7',
-        border: '2px dashed #f59e0b',
-        borderRadius: '12px',
-        padding: '2rem',
+    passengers: {
+        fontSize: '0.875rem',
+        color: '#1f2937',
+        marginTop: '0.5rem',
+    },
+    priceSection: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingTop: '1rem',
+        borderTop: '1px solid #e5e7eb',
+        marginBottom: '2rem',
+    },
+    priceLabel: {
+        fontSize: '1rem',
+        fontWeight: '600',
+        color: '#1f2937',
+    },
+    priceValue: {
+        fontSize: '1.25rem',
+        fontWeight: '700',
+        color: '#1f2937',
+    },
+    paymentSection: {
+        marginTop: '2rem',
+    },
+    paymentTitle: {
+        fontSize: '1.125rem',
+        fontWeight: '600',
+        marginBottom: '1rem',
+        color: '#1f2937',
+    },
+    paymentMethodLabel: {
+        fontSize: '0.875rem',
+        color: '#6b7280',
+        marginBottom: '1.5rem',
         textAlign: 'center',
-        color: '#92400e',
+        padding: '0.5rem',
+        border: '1px solid #d1d5db',
+        borderRadius: '4px',
+    },
+    formGrid: {
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '1rem',
+    },
+    formGroup: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '0.5rem',
+    },
+    label: {
+        fontSize: '0.875rem',
+        color: '#374151',
+        fontWeight: '500',
+    },
+    input: {
+        padding: '0.75rem',
+        border: '1px solid #d1d5db',
+        borderRadius: '4px',
+        fontSize: '0.875rem',
+        outline: 'none',
+    },
+    inputError: {
+        borderColor: '#ef4444',
+    },
+    select: {
+        padding: '0.75rem',
+        border: '1px solid #d1d5db',
+        borderRadius: '4px',
+        fontSize: '0.875rem',
+        outline: 'none',
+        backgroundColor: 'white',
+        cursor: 'pointer',
+    },
+    radioGroup: {
+        display: 'flex',
+        gap: '2rem',
+        alignItems: 'center',
+        paddingTop: '1.75rem',
+    },
+    radioLabel: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        fontSize: '0.875rem',
+        color: '#374151',
+        cursor: 'pointer',
+    },
+    radio: {
+        width: '1rem',
+        height: '1rem',
+        cursor: 'pointer',
+    },
+    errorText: {
+        fontSize: '0.75rem',
+        color: '#ef4444',
+    },
+    buttonContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        marginTop: '2rem',
+    },
+    confirmButton: {
+        backgroundColor: '#1e3a5f',
+        color: 'white',
+        border: 'none',
+        padding: '0.875rem 4rem',
+        borderRadius: '8px',
+        fontSize: '1rem',
+        fontWeight: '600',
+        cursor: 'pointer',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
     },
 };
 
