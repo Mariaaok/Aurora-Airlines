@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/layouts/navbar';
+import { API_BASE_URL } from '../config';
 
 // 1. CONSTANTES E INTERFACES (Seguindo seu padrão)
 // Assumindo que a API de voos está neste endpoint
-const API_URL = 'http://localhost:3001/userFlights'; 
+const API_URL = `${API_BASE_URL}/userFlights`; 
 
 // Interface para definir a estrutura de um voo, baseada na imagem
 interface Flight {

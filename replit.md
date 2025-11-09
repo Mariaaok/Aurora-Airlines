@@ -39,8 +39,8 @@ This project was imported from GitHub and configured to run in the Replit enviro
 ## Current Configuration
 
 ### Backend (Port 3001)
-- **Host**: localhost
-- **Port**: 3001
+- **Host**: 0.0.0.0 (configurable via HOST env variable)
+- **Port**: 3001 (configurable via PORT env variable)
 - **Database**: SQLite (database.sqlite)
 - **CORS**: Enabled for all origins
 - **Session**: Uses SESSION_SECRET environment variable (falls back to default)
@@ -49,7 +49,10 @@ This project was imported from GitHub and configured to run in the Replit enviro
 - **Host**: 0.0.0.0
 - **Port**: 5000
 - **Proxy**: Configured to accept all hosts (required for Replit)
-- **API Endpoint**: http://localhost:3001
+- **API Base URL**: Centralized in `src/config.ts` with automatic environment detection:
+  - Development: http://localhost:3001
+  - Replit deployment: Same origin as frontend
+  - Override with REACT_APP_API_URL environment variable if needed
 
 ## Running the Application
 
@@ -103,6 +106,9 @@ The application uses SQLite with TypeORM for the following entities:
 - `PORT`: 5000 (set in .env)
 - `HOST`: 0.0.0.0 (set in .env)
 - `DANGEROUSLY_DISABLE_HOST_CHECK`: true (required for Replit)
+- `REACT_APP_API_URL`: Optional - API base URL. If not set, the app automatically detects:
+  - Replit environments (uses same origin as frontend)
+  - Local development (uses http://localhost:3001)
 
 ## Deployment
 
@@ -114,17 +120,19 @@ The project is configured for deployment with:
 
 ### Setup for Replit Environment
 1. Installed Node.js 20 and all dependencies
-2. Fixed backend port conflict (5000 → 3001)
+2. Fixed backend port conflict (5000 → 3001) and made it configurable
 3. Updated CORS to accept all origins for Replit proxy
-4. Updated all frontend API URLs to use localhost:3001
-5. Configured frontend to run on port 5000 with 0.0.0.0 host
-6. Created combined startup script for both services
-7. Added proper .gitignore files
-8. Configured deployment settings
+4. Changed backend to listen on 0.0.0.0 instead of localhost
+5. Centralized frontend API configuration in `src/config.ts`
+6. Updated all frontend API URLs to use the centralized configuration
+7. Configured frontend to run on port 5000 with 0.0.0.0 host
+8. Created combined startup script for both services
+9. Added proper .gitignore files
+10. Configured deployment settings for autoscale
 
 ### Port Configuration
-- **Frontend**: Port 5000 (exposed to users)
-- **Backend**: Port 3001 (internal, accessed by frontend)
+- **Frontend**: Port 5000 (exposed to users via webview)
+- **Backend**: Port 3001 (accessed internally by frontend via localhost)
 
 ## Known Issues
 

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { API_BASE_URL } from '../config';
 
-const AUTH_STATUS_URL = 'http://localhost:3001/auth/status';
+const AUTH_STATUS_URL = `${API_BASE_URL}/auth/status`;
 
 interface User {
     id: number;

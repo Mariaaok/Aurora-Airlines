@@ -1,4 +1,6 @@
-export const API_BASE_URL = 'http://localhost:3001/airports';
+import { API_BASE_URL as BASE_URL } from './config';
+
+export const API_BASE_URL = `${BASE_URL}/airports`;
 
 // Interface da Entidade Completa (baseada em airports.entity.ts)
 export interface Airport {

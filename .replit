@@ -30,6 +30,10 @@ waitForPort = 5000
 outputType = "webview"
 
 [[ports]]
+localPort = 3001
+externalPort = 3001
+
+[[ports]]
 localPort = 5000
 externalPort = 80
 
@@ -39,5 +43,5 @@ externalPort = 3000
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["bash", "-c", "cd backend && npm run start:prod & cd ../frontend && npm install -g serve && serve -s build -l 5000"]
-build = ["bash", "-c", "cd backend && npm install && npm run build && cd ../frontend && npm install && npm run build"]
+run = ["bash", "-c", "cd backend && npm run start:prod & sleep 5 && cd ../frontend && npx serve -s build -l 5000"]
+build = ["bash", "-c", "cd backend && npm install && npm run build && cd ../frontend && npm install && REACT_APP_API_URL='' npm run build"]

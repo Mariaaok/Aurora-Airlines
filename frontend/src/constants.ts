@@ -1,4 +1,6 @@
-export const API_BASE_URL = 'http://localhost:3001/employees';
+import { API_BASE_URL as BASE_URL } from './config';
+
+export const API_BASE_URL = `${BASE_URL}/employees`;
 
 export const CATEGORY_OPTIONS: string[] = [
     'International Pilot (Commander)',
