@@ -140,24 +140,56 @@ The project is configured for deployment with:
 6. Configured aurora background image support with gradient fallback
 7. Styled components with rounded corners, shadows, and glass panel effects matching design requirements
 
-### Flight Booking Flow Implementation
-1. Updated FlightSearchPage title to "Choose your departure flight:" to clarify the booking flow
-2. Created FlightResultsPage (`frontend/src/pages/FlightResultsPage.tsx`) to display search results:
-   - Shows list of available flights with flight details (number, aircraft, route, times, duration)
-   - Clickable flight cards that navigate to flight details
-   - Back navigation to search and empty state handling
-3. Created interactive seat selection components:
-   - SeatSelector (`frontend/src/components/SeatSelector.tsx`) - Interactive seat map with click-to-select functionality
-   - SeatSelectorModal (`frontend/src/components/SeatSelectorModal.tsx`) - Modal wrapper for seat selection
-4. Created FlightDetailsPage (`frontend/src/pages/FlightDetailsPage.tsx`) matching the design prototype:
-   - Flight route display with from/to information
-   - Trip summary card showing departure, arrival, duration, aircraft, and flight number
-   - Seat selection section with "Choose your seats" button
-   - Selected seats display (e.g., "A4, B4")
-   - Continue button with seat selection validation
-   - Navigation links for back to results and search for another flight
-5. Implemented complete data flow using React Router state to pass flight data and search criteria between pages
-6. Added routing configuration for /flight-results and /flight-details pages
+### Flight Booking Flow Implementation (Round-Trip)
+1. Created BookingContext (`frontend/src/contexts/BookingContext.tsx`) to manage booking state:
+   - Tracks search criteria, departure flight, return flight, and seat selections
+   - Derives passenger count from number of departure seats selected
+   - Provides clearBooking function to reset state for new searches
+   - Wrapped application in BookingProvider for global state access
+
+2. Implemented FlightSearchPage (`frontend/src/pages/FlightSearchPage.tsx`):
+   - Glass morphism design with aurora background
+   - Search form with From, To, Departure Date, and Return Date fields
+   - Integrates with BookingContext to save search data
+   - Clears previous booking state when new search starts
+   - Redirects to departure flight results after search
+
+3. Created FlightResultsPage (`frontend/src/pages/FlightResultsPage.tsx`) supporting both departure and return modes:
+   - Reusable component that handles both departure and return flight selection
+   - Shows "Choose your departure flight:" or "Choose your return flight:" based on mode
+   - Displays flight cards with route, times, duration, and aircraft information
+   - Clickable flight cards navigate to flight details
+   - "Skip return flight and proceed to checkout" button always available on return mode
+   - Handles empty state when no flights found
+   - Navigation links for back to search
+
+4. Implemented FlightDetailsPage (`frontend/src/pages/FlightDetailsPage.tsx`) supporting both modes:
+   - Reusable component for both departure and return flight seat selection
+   - Shows flight route, trip summary with all flight details
+   - Integrates with SeatSelector for interactive seat selection
+   - Displays selected seats (e.g., "A4, B4")
+   - Continue button validates seat selection before proceeding
+   - Departure mode: Saves flight + seats, auto-searches for return flights
+   - Return mode: Saves flight + seats, navigates to checkout
+   - Preserves selected seats when navigating back
+
+5. Created seat selection components:
+   - SeatSelector (`frontend/src/components/SeatSelector.tsx`) - Interactive seat map with click-to-select
+   - SeatSelectorModal (`frontend/src/components/SeatSelectorModal.tsx`) - Modal wrapper
+   - Reuses existing SeatMapViewer component for consistency
+
+6. Implemented CheckoutPage (`frontend/src/pages/CheckoutPage.tsx`):
+   - Displays complete booking summary with departure and return flight details
+   - Shows passenger count derived from selected seats
+   - Displays selected seats for both flights
+   - Placeholder for passenger detail forms (one per passenger)
+   - Placeholder for payment integration
+   - Redirects to search if booking data is incomplete
+
+7. Complete booking flow:
+   - Search → Departure results → Departure details + seats → Auto-search return
+   - Return results (with skip option) → Return details + seats OR Skip
+   - Checkout with booking summary and passenger count
 
 ### Port Configuration
 - **Frontend**: Port 5000 (exposed to users via webview)
