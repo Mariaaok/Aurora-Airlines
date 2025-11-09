@@ -28,7 +28,7 @@ async function bootstrap() {
   app.use(passport.session());
   app.useGlobalPipes(new ValidationPipe());
 
-  const port = process.env.PORT || 3001;
+  const port = process.env.PORT || 5000;
   const host = process.env.HOST || '0.0.0.0';
   await app.listen(port, host);
   console.log(`Backend is running on ${host}:${port}`);
