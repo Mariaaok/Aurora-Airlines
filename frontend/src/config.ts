@@ -12,8 +12,8 @@ const getApiBaseUrl = (): string => {
     }
   }
   
-  // Local development: backend runs on port 5000
-  return 'http://localhost:5000';
+  // Local development: backend runs on port 3000
+  return 'http://localhost:3000';
 };
 
 export const API_BASE_URL = getApiBaseUrl();

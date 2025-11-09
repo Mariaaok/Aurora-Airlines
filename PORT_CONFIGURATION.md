@@ -11,8 +11,8 @@ When you run the project in Replit, it automatically detects the environment and
 
 ### In Local Development / VS Code (Automatic)
 When you run the project locally, it automatically uses:
-- **Backend**: Port 5000
-- **Frontend**: Port 3000 (React default)
+- **Backend**: Port 3000
+- **Frontend**: Port 3001 or next available (React default behavior)
 
 ## Running the Project
 
@@ -59,8 +59,8 @@ Simply click the "Run" button or use the workflow. Everything is configured auto
    ```
 
 4. **Access the application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000
+   - Backend API: http://localhost:3000
+   - Frontend: http://localhost:3001 (or next available port - React will tell you)
 
 ## Environment Detection Logic
 
@@ -69,7 +69,7 @@ The `start.sh` script automatically detects the environment:
 - **Replit Detection**: Checks for `REPL_ID` environment variable
   - Sets `BACKEND_PORT=3001` and `PORT=5000`
 - **Local Detection**: No `REPL_ID` present
-  - Sets `BACKEND_PORT=5000` and uses React's default port 3000
+  - Sets `BACKEND_PORT=3000` and React uses its default port (3001 or next available)
 
 ## Database
 
@@ -83,11 +83,11 @@ If you see "port already in use" errors:
 ```bash
 # Find and kill the process using the port
 # On Linux/Mac:
-lsof -ti:5000 | xargs kill -9  # For backend
-lsof -ti:3000 | xargs kill -9  # For frontend
+lsof -ti:3000 | xargs kill -9  # For backend
+lsof -ti:3001 | xargs kill -9  # For frontend
 
 # On Windows:
-netstat -ano | findstr :5000
+netstat -ano | findstr :3000
 taskkill /PID <PID> /F
 ```
 
@@ -99,7 +99,7 @@ The frontend automatically detects which backend URL to use:
 If you need to override this, set the environment variable:
 ```bash
 # In frontend/.env
-REACT_APP_API_URL=http://localhost:5000
+REACT_APP_API_URL=http://localhost:3000
 ```
 
 ## Team Workflow
@@ -115,7 +115,7 @@ The project is configured to work seamlessly for all team members regardless of 
 
 ### Files Modified for Port Configuration
 - `start.sh` - Environment detection and port assignment
-- `backend/src/main.ts` - Reads `BACKEND_PORT` env var (fallback: 5000)
+- `backend/src/main.ts` - Reads `BACKEND_PORT` env var (fallback: 3000)
 - `frontend/src/config.ts` - Detects Replit vs local environment for API URL
 
 ### Environment Variables

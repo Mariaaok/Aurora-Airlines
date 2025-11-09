@@ -90,8 +90,8 @@ The project automatically detects whether it's running in Replit or local develo
 - Backend: Port 3001 (internal API)
 
 **In Local Development (VS Code):**
-- Frontend: Port 3000 (React default)
-- Backend: Port 5000 (original team configuration)
+- Backend: Port 3000 (original team configuration)
+- Frontend: Port 3001 or next available (React default)
 
 **Implementation:**
 - `start.sh` detects environment via `REPL_ID` variable

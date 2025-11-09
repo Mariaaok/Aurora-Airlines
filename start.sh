@@ -7,10 +7,10 @@ if [ -n "$REPL_ID" ]; then
   export PORT=5000
   echo "Replit environment detected - Backend: 3001, Frontend: 5000"
 else
-  # Running locally (VS Code): backend on 5000, frontend on 3000
-  export BACKEND_PORT=5000
-  # PORT defaults to 3000 for React (no need to set)
-  echo "Local environment detected - Backend: 5000, Frontend: 3000 (default)"
+  # Running locally (VS Code): backend on 3000, frontend on default React port
+  export BACKEND_PORT=3000
+  # PORT not set - React defaults to 3001 or next available port
+  echo "Local environment detected - Backend: 3000, Frontend: React default (3001 or next available)"
 fi
 
 # Start backend in the background
