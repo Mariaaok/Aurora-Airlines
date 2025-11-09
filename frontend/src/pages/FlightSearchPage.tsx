@@ -40,15 +40,14 @@ const FlightSearchPage: React.FC = () => {
 
             if (response.ok) {
                 const results = await response.json();
-                // Navigate to results page with search data (to be implemented later)
-                console.log('Search results:', results);
-                // For now, we'll just log the results
-                // navigate('/search-results', { state: { results, searchData: formData } });
+                navigate('/flight-results', { state: { results, searchData: formData } });
             } else {
                 console.error('Search failed');
+                alert('Failed to search for flights. Please try again.');
             }
         } catch (error) {
             console.error('Error searching for flights:', error);
+            alert('Error searching for flights. Please try again.');
         }
     };
 
@@ -87,7 +86,7 @@ const FlightSearchPage: React.FC = () => {
                 {/* Glass Panel Container */}
                 <div style={styles.searchContainer}>
                     <div style={styles.glassPanel}>
-                        <h2 style={styles.title}>Search for your next flight here:</h2>
+                        <h2 style={styles.title}>Choose your departure flight:</h2>
                         
                         <form onSubmit={handleSearch} style={styles.form}>
                             <div style={styles.row}>
