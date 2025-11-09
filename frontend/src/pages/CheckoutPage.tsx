@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useBooking } from '../contexts/BookingContext';
 import { API_BASE_URL } from '../config';
+import jsPDF from 'jspdf';
 
 const CheckoutPage: React.FC = () => {
     const navigate = useNavigate();
@@ -138,6 +139,38 @@ const CheckoutPage: React.FC = () => {
             console.log('Bank slip payment confirmed!');
             alert('Booking confirmed with bank slip! (Backend integration pending)');
         }
+    };
+
+    const generateBankSlipPDF = () => {
+        const doc = new jsPDF();
+        const bankName = 'MulberryPay Holdings';
+        const barCode = '00000-09095-34343-19445';
+        
+        doc.setFontSize(20);
+        doc.text('Aurora Airlines - Bank Slip', 20, 20);
+        
+        doc.setFontSize(12);
+        doc.text('Payment Details', 20, 40);
+        
+        doc.setFontSize(10);
+        doc.text(`Bank: ${bankName}`, 20, 55);
+        doc.text(`Bar Code: ${barCode}`, 20, 65);
+        doc.text(`Amount: ${finalPrice} USD`, 20, 75);
+        
+        doc.text('Flight Details:', 20, 95);
+        doc.text(`Route: ${departureFlight.originAirport.city} → ${departureFlight.destinationAirport.city}`, 20, 105);
+        doc.text(`Departure: ${departureFlight.departureDate} at ${formatTime(departureFlight.departureTime)}`, 20, 115);
+        doc.text(`Passengers: ${passengerCount}`, 20, 125);
+        
+        if (returnFlight) {
+            doc.text(`Return: ${returnFlight.originAirport.city} → ${returnFlight.destinationAirport.city}`, 20, 135);
+            doc.text(`Return Date: ${returnFlight.departureDate} at ${formatTime(returnFlight.departureTime)}`, 20, 145);
+        }
+        
+        doc.text('Please pay this amount at any MulberryPay Holdings branch or authorized agent.', 20, 170);
+        doc.text('This bank slip is valid for 3 days from the issue date.', 20, 180);
+        
+        doc.save('aurora-airlines-bank-slip.pdf');
     };
 
     const finalPrice = calculatePrice();
@@ -336,8 +369,20 @@ const CheckoutPage: React.FC = () => {
 
                         {paymentMethod === 'bank_slip' && (
                             <div style={styles.paymentDetailsSection}>
-                                <div style={styles.placeholderMessage}>
-                                    Bank slip details will be implemented here
+                                <div style={styles.bankSlipDetails}>
+                                    <div style={styles.bankSlipRow}>
+                                        <span style={styles.bankSlipLabel}>Bank:</span>
+                                        <span style={styles.bankSlipValue}>MulberryPay Holdings</span>
+                                    </div>
+                                    <div style={styles.bankSlipRow}>
+                                        <span style={styles.bankSlipLabel}>Bar code:</span>
+                                        <span style={styles.bankSlipValue}>00000-09095-34343-19445</span>
+                                    </div>
+                                </div>
+                                <div style={styles.printButtonContainer}>
+                                    <button onClick={generateBankSlipPDF} style={styles.printButton}>
+                                        Print bank slip
+                                    </button>
                                 </div>
                             </div>
                         )}
@@ -565,13 +610,42 @@ const styles: { [key: string]: React.CSSProperties } = {
         cursor: 'pointer',
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
     },
-    placeholderMessage: {
-        padding: '2rem',
-        textAlign: 'center',
-        color: '#6b7280',
-        backgroundColor: '#f9fafb',
+    bankSlipDetails: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1rem',
+        marginBottom: '2rem',
+    },
+    bankSlipRow: {
+        display: 'flex',
+        gap: '1rem',
+        alignItems: 'center',
+    },
+    bankSlipLabel: {
+        fontSize: '0.875rem',
+        color: '#374151',
+        fontWeight: '600',
+        minWidth: '80px',
+    },
+    bankSlipValue: {
+        fontSize: '0.875rem',
+        color: '#1f2937',
+    },
+    printButtonContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        marginTop: '1rem',
+    },
+    printButton: {
+        backgroundColor: '#1e88e5',
+        color: 'white',
+        border: 'none',
+        padding: '0.75rem 2rem',
         borderRadius: '8px',
-        border: '2px dashed #d1d5db',
+        fontSize: '0.875rem',
+        fontWeight: '600',
+        cursor: 'pointer',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
     },
 };
 
