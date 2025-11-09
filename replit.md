@@ -140,6 +140,25 @@ The project is configured for deployment with:
 6. Configured aurora background image support with gradient fallback
 7. Styled components with rounded corners, shadows, and glass panel effects matching design requirements
 
+### Flight Booking Flow Implementation
+1. Updated FlightSearchPage title to "Choose your departure flight:" to clarify the booking flow
+2. Created FlightResultsPage (`frontend/src/pages/FlightResultsPage.tsx`) to display search results:
+   - Shows list of available flights with flight details (number, aircraft, route, times, duration)
+   - Clickable flight cards that navigate to flight details
+   - Back navigation to search and empty state handling
+3. Created interactive seat selection components:
+   - SeatSelector (`frontend/src/components/SeatSelector.tsx`) - Interactive seat map with click-to-select functionality
+   - SeatSelectorModal (`frontend/src/components/SeatSelectorModal.tsx`) - Modal wrapper for seat selection
+4. Created FlightDetailsPage (`frontend/src/pages/FlightDetailsPage.tsx`) matching the design prototype:
+   - Flight route display with from/to information
+   - Trip summary card showing departure, arrival, duration, aircraft, and flight number
+   - Seat selection section with "Choose your seats" button
+   - Selected seats display (e.g., "A4, B4")
+   - Continue button with seat selection validation
+   - Navigation links for back to results and search for another flight
+5. Implemented complete data flow using React Router state to pass flight data and search criteria between pages
+6. Added routing configuration for /flight-results and /flight-details pages
+
 ### Port Configuration
 - **Frontend**: Port 5000 (exposed to users via webview)
 - **Backend**: Port 3001 (accessed internally by frontend via localhost)
