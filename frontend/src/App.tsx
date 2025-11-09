@@ -12,6 +12,7 @@ import AdminFlightTypesPage from './pages/FlightTypesPage';
 import AdminFlightsPage from './pages/FlightsPage';
 import UserFlights from './pages/UserFlightsPage';
 import AdminReportsPage from './pages/AdminReportsPage';
+import FlightSearchPage from './pages/FlightSearchPage';
 
 function App() {
   return (
@@ -35,6 +36,8 @@ function App() {
       <Route path="/admin/reports" element={ <AdminReportsPage/> }/>
       
       <Route path="/home" element={<HomeScreen/>} />
+
+      <Route path="/search-flights" element={<FlightSearchPage/>} />
 
       <Route path="/my-flights" element={<UserFlights/>}/>
       
