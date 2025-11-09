@@ -8,6 +8,15 @@ interface SearchData {
     returnDate: string;
 }
 
+export interface PassengerData {
+    fullName: string;
+    birthday: string;
+    phoneNumber: string;
+    cpf: string;
+    email: string;
+    rg: string;
+}
+
 interface BookingContextType {
     searchData: SearchData | null;
     setSearchData: (data: SearchData) => void;
@@ -24,6 +33,9 @@ interface BookingContextType {
     returnSeats: string[];
     setReturnSeats: (seats: string[]) => void;
     
+    passengers: PassengerData[];
+    setPassengers: (passengers: PassengerData[]) => void;
+    
     passengerCount: number;
     
     clearBooking: () => void;
@@ -37,6 +49,7 @@ export const BookingProvider: React.FC<{ children: ReactNode }> = ({ children })
     const [departureSeats, setDepartureSeats] = useState<string[]>([]);
     const [returnFlight, setReturnFlight] = useState<Flight | null>(null);
     const [returnSeats, setReturnSeats] = useState<string[]>([]);
+    const [passengers, setPassengers] = useState<PassengerData[]>([]);
 
     const passengerCount = departureSeats.length;
 
@@ -46,6 +59,7 @@ export const BookingProvider: React.FC<{ children: ReactNode }> = ({ children })
         setDepartureSeats([]);
         setReturnFlight(null);
         setReturnSeats([]);
+        setPassengers([]);
     };
 
     return (
@@ -61,6 +75,8 @@ export const BookingProvider: React.FC<{ children: ReactNode }> = ({ children })
                 setReturnFlight,
                 returnSeats,
                 setReturnSeats,
+                passengers,
+                setPassengers,
                 passengerCount,
                 clearBooking,
             }}

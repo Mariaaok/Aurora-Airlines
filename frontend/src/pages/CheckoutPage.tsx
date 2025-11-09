@@ -13,7 +13,9 @@ const CheckoutPage: React.FC = () => {
         departureSeats,
         returnFlight,
         returnSeats,
-        passengerCount
+        passengerCount,
+        passengers,
+        clearBooking
     } = useBooking();
 
     const [paymentMethod, setPaymentMethod] = useState<'credit_card' | 'bank_slip' | ''>('');
@@ -129,15 +131,66 @@ const CheckoutPage: React.FC = () => {
         }
     };
 
+    const createPurchase = async (paymentMethodUsed: 'credit_card' | 'bank_slip', paymentDetailsData: any) => {
+        try {
+            const purchaseData = {
+                departureFlightId: departureFlight.id,
+                departureSeats: JSON.stringify(departureSeats),
+                returnFlightId: returnFlight ? returnFlight.id : null,
+                returnSeats: returnFlight ? JSON.stringify(returnSeats) : null,
+                passengers: JSON.stringify(passengers),
+                paymentMethod: paymentMethodUsed,
+                paymentDetails: JSON.stringify(paymentDetailsData),
+                totalPrice: parseFloat(finalPrice),
+                status: 'confirmed',
+            };
+
+            const response = await fetch(`${API_BASE_URL}/purchases`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify(purchaseData),
+            });
+
+            if (response.ok) {
+                const purchase = await response.json();
+                console.log('Purchase created successfully:', purchase);
+                alert('Booking confirmed! Your purchase ID is: ' + purchase.id);
+                clearBooking();
+                navigate('/search-flights');
+            } else {
+                const errorData = await response.json();
+                console.error('Failed to create purchase:', errorData);
+                alert('Failed to create booking. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error creating purchase:', error);
+            alert('Error creating booking. Please check your connection.');
+        }
+    };
+
     const handleConfirm = () => {
         if (paymentMethod === 'credit_card') {
             if (validateCreditCardForm()) {
-                console.log('Credit card payment confirmed!');
-                alert('Booking confirmed with credit card! (Backend integration pending)');
+                const cleanCardNumber = cardNumber.replace(/\s/g, '');
+                const lastFourDigits = cleanCardNumber.slice(-4);
+                
+                const paymentDetails = {
+                    lastFourDigits,
+                    nameOnCard,
+                    installments: parseInt(installments),
+                    paymentType,
+                };
+                createPurchase('credit_card', paymentDetails);
             }
         } else if (paymentMethod === 'bank_slip') {
-            console.log('Bank slip payment confirmed!');
-            alert('Booking confirmed with bank slip! (Backend integration pending)');
+            const paymentDetails = {
+                bankName: 'MulberryPay Holdings',
+                barCode: '00000-09095-34343-19445',
+            };
+            createPurchase('bank_slip', paymentDetails);
         }
     };
 

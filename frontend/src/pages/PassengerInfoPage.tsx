@@ -1,17 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useBooking } from '../contexts/BookingContext';
+import { useBooking, PassengerData } from '../contexts/BookingContext';
 import { API_BASE_URL } from '../config';
-
-interface PassengerData {
-    fullName: string;
-    birthday: string;
-    phoneNumber: string;
-    cpf: string;
-    email: string;
-    rg: string;
-}
 
 const PassengerInfoPage: React.FC = () => {
     const navigate = useNavigate();
@@ -21,7 +12,8 @@ const PassengerInfoPage: React.FC = () => {
         departureSeats,
         returnFlight,
         returnSeats,
-        passengerCount
+        passengerCount,
+        setPassengers: savePassengersToContext
     } = useBooking();
 
     if (!departureFlight || departureSeats.length === 0) {
@@ -84,6 +76,7 @@ const PassengerInfoPage: React.FC = () => {
     };
 
     const handleGoToCheckout = () => {
+        savePassengersToContext(passengers);
         navigate('/checkout');
     };
 
