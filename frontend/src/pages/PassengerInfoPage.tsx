@@ -33,6 +33,8 @@ const PassengerInfoPage: React.FC = () => {
     const [passengers, setPassengers] = useState<PassengerData[]>(
         Array(passengerCount).fill(null).map(() => ({ ...initialPassengerData }))
     );
+    
+    const [errors, setErrors] = useState<string[]>([]);
 
     const handleSignOut = async () => {
         try {
@@ -75,9 +77,64 @@ const PassengerInfoPage: React.FC = () => {
         return total.toFixed(2);
     };
 
+    const validatePassengers = (): boolean => {
+        const validationErrors: string[] = [];
+        
+        passengers.forEach((passenger, index) => {
+            const passengerNum = index + 1;
+            
+            // Check all required fields
+            if (!passenger.fullName.trim()) {
+                validationErrors.push(`Passenger ${passengerNum}: Full name is required`);
+            }
+            
+            if (!passenger.birthday.trim()) {
+                validationErrors.push(`Passenger ${passengerNum}: Birthday is required`);
+            } else {
+                // Validate date format (yyyy-mm-dd)
+                const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+                if (!dateRegex.test(passenger.birthday)) {
+                    validationErrors.push(`Passenger ${passengerNum}: Birthday must be in format yyyy-mm-dd`);
+                }
+            }
+            
+            if (!passenger.phoneNumber.trim()) {
+                validationErrors.push(`Passenger ${passengerNum}: Phone number is required`);
+            } else if (!/^\+?\d{10,15}$/.test(passenger.phoneNumber.replace(/[\s-]/g, ''))) {
+                validationErrors.push(`Passenger ${passengerNum}: Phone number must contain 10-15 digits`);
+            }
+            
+            if (!passenger.cpf.trim()) {
+                validationErrors.push(`Passenger ${passengerNum}: CPF is required`);
+            } else if (!/^\d{11}$/.test(passenger.cpf.replace(/[.-]/g, ''))) {
+                validationErrors.push(`Passenger ${passengerNum}: CPF must contain 11 digits`);
+            }
+            
+            if (!passenger.email.trim()) {
+                validationErrors.push(`Passenger ${passengerNum}: Email is required`);
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(passenger.email)) {
+                validationErrors.push(`Passenger ${passengerNum}: Please enter a valid email address`);
+            }
+            
+            if (!passenger.rg.trim()) {
+                validationErrors.push(`Passenger ${passengerNum}: RG is required`);
+            } else if (!/^\d{7,9}$/.test(passenger.rg.replace(/[.-]/g, ''))) {
+                validationErrors.push(`Passenger ${passengerNum}: RG must contain 7-9 digits`);
+            }
+        });
+        
+        setErrors(validationErrors);
+        return validationErrors.length === 0;
+    };
+
     const handleGoToCheckout = () => {
-        savePassengersToContext(passengers);
-        navigate('/checkout');
+        if (validatePassengers()) {
+            savePassengersToContext(passengers);
+            navigate('/checkout');
+        } else {
+            // Scroll to top to show errors
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     };
 
     const finalPrice = calculatePrice();
@@ -169,6 +226,17 @@ const PassengerInfoPage: React.FC = () => {
                 <div style={styles.contentContainer}>
                     <h1 style={styles.title}>Passengers</h1>
                     
+                    {errors.length > 0 && (
+                        <div style={styles.errorBox}>
+                            <h3 style={styles.errorTitle}>⚠️ Please correct the following errors:</h3>
+                            <ul style={styles.errorList}>
+                                {errors.map((error, index) => (
+                                    <li key={index} style={styles.errorItem}>{error}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                    
                     <div style={styles.scrollContainer}>
                         <div style={styles.flightSection}>
                             <h2 style={styles.flightSectionTitle}>Departure Flight</h2>
@@ -226,7 +294,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         alignItems: 'center',
     },
     logo: {
-        height: '50px',
+        height: '80px',
         width: 'auto',
     },
     signOutButton: {
@@ -342,6 +410,28 @@ const styles: { [key: string]: React.CSSProperties } = {
         color: '#1e3a5f',
         marginBottom: '1rem',
         paddingLeft: '0.5rem',
+    },
+    errorBox: {
+        backgroundColor: '#fee2e2',
+        border: '2px solid #ef4444',
+        borderRadius: '8px',
+        padding: '1.25rem',
+        marginBottom: '1.5rem',
+    },
+    errorTitle: {
+        color: '#991b1b',
+        fontSize: '1rem',
+        fontWeight: '600',
+        marginBottom: '0.75rem',
+    },
+    errorList: {
+        margin: '0',
+        paddingLeft: '1.5rem',
+        color: '#991b1b',
+    },
+    errorItem: {
+        marginBottom: '0.5rem',
+        fontSize: '0.875rem',
     },
 };
 

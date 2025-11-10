@@ -102,6 +102,14 @@ const FlightDetailsPage: React.FC = () => {
             setDepartureFlight(flight);
             setDepartureSeats(selectedSeats);
             
+            // Check if there's a return date - if not, go directly to passenger info
+            if (!searchData.returnDate || searchData.returnDate === '') {
+                console.log('One-way flight - proceeding to passenger info');
+                navigate('/passenger-info');
+                return;
+            }
+            
+            // If there's a return date, search for return flights
             try {
                 const returnSearchData = {
                     from: searchData.to,
@@ -123,7 +131,7 @@ const FlightDetailsPage: React.FC = () => {
                     const results = await response.json();
                     navigate('/flight-results', { 
                         state: { 
-                            results, 
+                            results: results.outbound, 
                             searchData: searchData,
                             isReturn: true
                         } 
@@ -276,7 +284,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         alignItems: 'center',
     },
     logo: {
-        height: '50px',
+        height: '80px',
         width: 'auto',
     },
     signOutButton: {

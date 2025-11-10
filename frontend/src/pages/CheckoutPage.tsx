@@ -186,21 +186,21 @@ const CheckoutPage: React.FC = () => {
             }
         } else if (paymentMethod === 'bank_slip') {
             const paymentDetails = {
-                bankName: 'MulberryPay Holdings',
+                bankName: 'Bauny Banks',
                 barCode: '00000-09095-34343-19445',
             };
             createPurchase('bank_slip', paymentDetails);
         }
     };
 
-    const downloadBankSlipPDF = () => {
-        const link = document.createElement('a');
-        link.href = '/thanks-for-the-purchase.pdf';
-        link.download = 'thanks-for-the-purchase.pdf';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
+   const downloadBankSlipPDF = () => {
+    const link = document.createElement('a');
+    link.href = '/Rocambole.png';
+    link.download = 'bank-slip.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
 
     const finalPrice = calculatePrice();
 
@@ -450,7 +450,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         alignItems: 'center',
     },
     logo: {
-        height: '50px',
+        height: '80px',
         width: 'auto',
     },
     signOutButton: {

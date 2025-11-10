@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, Patch, Delete, ParseIntPipe } from 
 import { FlightsService } from './flights.service';
 import { CreateFlightsDto } from './create-flights.dto'; 
 import { UpdateFlightsDto } from './update-flights.dto'; 
+import { FlightSearchDto } from './flight-search.dto'; 
 
 @Controller('flights')
 export class FlightsController {
@@ -10,6 +11,11 @@ export class FlightsController {
   @Get() 
   findAll() {
     return this.flightsService.findAll(); 
+  }
+
+  @Post('search')
+  search(@Body() searchDto: FlightSearchDto) {
+    return this.flightsService.searchFlights(searchDto);
   }
 
   @Post()

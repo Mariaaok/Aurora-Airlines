@@ -24,11 +24,21 @@ export class AuthController {
   /**
    * Rota de Logout: POST /auth/logout
    */
-  @UseGuards(SessionAuthGuard) // Só pode deslogar se estiver logado
-  @Post('logout')
+  @Post('logout') // ✅ No guard - anyone can log out
   logout(@Request() req) {
-    req.session.destroy(); // Destrói a sessão no servidor
-    return { msg: 'Usuário deslogado' };
+    return new Promise((resolve, reject) => {
+      if (req.session) { // ✅ Check if session exists
+        req.session.destroy((err) => { // ✅ Properly handle async
+          if (err) {
+            reject(err);
+          } else {
+            resolve({ msg: 'Usuário deslogado' });
+          }
+        });
+      } else {
+        resolve({ msg: 'Sessão já encerrada' });
+      }
+    });
   }
 
   /**
