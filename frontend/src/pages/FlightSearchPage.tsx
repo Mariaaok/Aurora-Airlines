@@ -242,7 +242,7 @@ const styles: { [k: string]: React.CSSProperties } = {
 
   nav: {
     height: 90,
-    background: "#0f335a",
+    background: "#022859",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",

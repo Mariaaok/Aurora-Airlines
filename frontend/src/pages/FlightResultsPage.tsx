@@ -185,7 +185,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         backgroundColor: '#f3f4f6',
     },
     navbar: {
-        backgroundColor: '#1e3a5f',
+        backgroundColor: '#022859',
         padding: '1rem 2rem',
         display: 'flex',
         justifyContent: 'space-between',

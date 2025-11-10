@@ -410,7 +410,7 @@ const CheckoutPage: React.FC = () => {
                                 </div>
                                 <div style={styles.printButtonContainer}>
                                     <button onClick={downloadBankSlipPDF} style={styles.printButton}>
-                                        Download receipt
+                                        Download bank slip
                                     </button>
                                 </div>
                             </div>
@@ -438,7 +438,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         backgroundColor: '#e5e7eb',
     },
     navbar: {
-        backgroundColor: '#1e3a5f',
+        backgroundColor: '#022859',
         padding: '1rem 2rem',
         display: 'flex',
         justifyContent: 'space-between',

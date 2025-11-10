@@ -180,7 +180,7 @@ const FlightDetailsPage: React.FC = () => {
                             <span style={styles.city}>{flight.originAirport.city}</span>
                         </div>
                         <div style={styles.routeItem}>
-                            <span style={styles.personIcon}>👤</span>
+                            <span style={styles.personIcon}>📍</span>
                             <span style={styles.label}>To:</span>
                             <span style={styles.city}>{flight.destinationAirport.city}</span>
                         </div>
@@ -272,7 +272,7 @@ const styles: { [key: string]: React.CSSProperties } = {
         backgroundColor: '#e5e7eb',
     },
     navbar: {
-        backgroundColor: '#1e3a5f',
+        backgroundColor: '#022859',
         padding: '1rem 2rem',
         display: 'flex',
         justifyContent: 'space-between',
