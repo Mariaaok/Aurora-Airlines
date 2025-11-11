@@ -11,6 +11,7 @@ import { FlightTypesModule } from './flightTypes/flight-types.module';
 import { FlightsModule } from './flights/flights.module';
 import { AuthModule } from './auth/auth.module';
 import { UserFlightsModule } from './userFlights/userFlights.module';
+import { ReportsModule } from './reports/reports.module';
 import { PurchasesModule } from './purchases/purchases.module';
 
 @Module({
@@ -30,6 +31,7 @@ import { PurchasesModule } from './purchases/purchases.module';
     FlightsModule,
     AuthModule,
     UserFlightsModule,
+    ReportsModule,
     PurchasesModule
   ],
   controllers: [AppController],
