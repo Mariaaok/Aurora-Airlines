@@ -12,6 +12,7 @@ import { API_BASE_URL as FLIGHTS_API, Flight, CreateFlightDto, UpdateFlightDto, 
 import { API_BASE_URL as FLIGHT_TYPES_API, FlightType } from '../flight-types.constants';
 import { API_BASE_URL as AIRCRAFT_TYPES_API, AircraftType } from '../aircraft-types.constants';
 import { API_BASE_URL as AIRPORTS_API, Airport } from '../airports.constants';
+import { API_BASE_URL } from '../config';
 import { Employee } from '../constants'; // Assumindo a interface Employee
 
 // Interface auxiliar para formatar os dados para o DataCard
@@ -61,7 +62,7 @@ const AdminFlightsPage: React.FC = () => {
             axios.get<FlightType[]>(FLIGHT_TYPES_API),
             axios.get<AircraftType[]>(AIRCRAFT_TYPES_API),
             axios.get<Airport[]>(AIRPORTS_API),
-            axios.get<Employee[]>('http://localhost:5000/employees'),
+            axios.get<Employee[]>(`${API_BASE_URL}/employees`),
             ]);
 
             const [

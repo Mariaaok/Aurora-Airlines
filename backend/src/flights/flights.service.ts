@@ -6,6 +6,7 @@ import { EmployeeFlight } from './employee-flight.entity';
 import { Employees } from '../employees/employees.entity'; // Assume que esta entidade existe
 import { CreateFlightsDto } from './create-flights.dto';
 import { UpdateFlightsDto } from './update-flights.dto';
+import { FlightSearchDto } from './flight-search.dto';
 
 @Injectable()
 export class FlightsService {
@@ -95,5 +96,39 @@ export class FlightsService {
     if (result.affected === 0) {
       throw new NotFoundException(`Flight with ID ${id} not found.`);
     }
+  }
+
+  async searchFlights(searchDto: FlightSearchDto) {
+    const { from, to, departureDate, returnDate } = searchDto;
+
+    const outboundFlights = await this.flightsRepository
+      .createQueryBuilder('flight')
+      .leftJoinAndSelect('flight.originAirport', 'originAirport')
+      .leftJoinAndSelect('flight.destinationAirport', 'destinationAirport')
+      .leftJoinAndSelect('flight.aircraftType', 'aircraftType')
+      .leftJoinAndSelect('flight.flightType', 'flightType')
+      .where('LOWER(TRIM(originAirport.city)) = LOWER(TRIM(:from))', { from })
+      .andWhere('LOWER(TRIM(destinationAirport.city)) = LOWER(TRIM(:to))', { to })
+      .andWhere('flight.departureDate = :departureDate', { departureDate })
+      .getMany();
+
+    let returnFlights: Flights[] = [];
+    if (returnDate) {
+      returnFlights = await this.flightsRepository
+        .createQueryBuilder('flight')
+        .leftJoinAndSelect('flight.originAirport', 'originAirport')
+        .leftJoinAndSelect('flight.destinationAirport', 'destinationAirport')
+        .leftJoinAndSelect('flight.aircraftType', 'aircraftType')
+        .leftJoinAndSelect('flight.flightType', 'flightType')
+        .where('LOWER(TRIM(originAirport.city)) = LOWER(TRIM(:to))', { to })
+        .andWhere('LOWER(TRIM(destinationAirport.city)) = LOWER(TRIM(:from))', { from })
+        .andWhere('flight.departureDate = :returnDate', { returnDate })
+        .getMany();
+    }
+
+    return {
+      outbound: outboundFlights,
+      return: returnFlights.length > 0 ? returnFlights : undefined
+    };
   }
 }

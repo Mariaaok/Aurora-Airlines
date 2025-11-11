@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Link, useNavigate } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config';
 
-const API_URL = 'http://localhost:5000/auth/login';
+const API_URL = `${API_BASE_URL}/auth/login`;
 
 interface LoginFormData {
     email: string;
@@ -61,7 +62,7 @@ const LoginScreen: React.FC = () => {
             if (user.type === 'admin') {
                 navigate('/admin/employees', { replace: true });
             } else {
-                navigate('/my-flights', { replace: true }); 
+                navigate('/search-flights', { replace: true }); 
             }
         }
     }, [user, navigate]);

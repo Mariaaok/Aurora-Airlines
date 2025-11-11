@@ -7,18 +7,19 @@ import passport = require('passport');
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: 'http://localhost:3000', 
+    origin: true,
     credentials: true,
   });
 
   app.use(
     session({                                                                                                                 
-      secret: 'STRONG_SESSION_SECRET',
+      secret: process.env.SESSION_SECRET || 'STRONG_SESSION_SECRET_CHANGE_IN_PRODUCTION',
       resave: false,
       saveUninitialized: false,
       cookie: {
         maxAge: 3600000,
         httpOnly: true,
+        sameSite: 'lax',
       },
     }),
   );
@@ -27,7 +28,10 @@ async function bootstrap() {
   app.use(passport.session());
   app.useGlobalPipes(new ValidationPipe());
 
-    await app.listen(5000);
+  const port = process.env.BACKEND_PORT || process.env.PORT || 3000;
+  const host = process.env.HOST || '0.0.0.0';
+  await app.listen(port, host);
+  console.log(`Backend is running on ${host}:${port}`);
 }
 
 bootstrap();

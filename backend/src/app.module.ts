@@ -12,6 +12,7 @@ import { FlightsModule } from './flights/flights.module';
 import { AuthModule } from './auth/auth.module';
 import { UserFlightsModule } from './userFlights/userFlights.module';
 import { ReportsModule } from './reports/reports.module';
+import { PurchasesModule } from './purchases/purchases.module';
 
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import { ReportsModule } from './reports/reports.module';
     FlightsModule,
     AuthModule,
     UserFlightsModule,
-    ReportsModule
+    ReportsModule,
+    PurchasesModule
   ],
   controllers: [AppController],
   providers: [AppService],

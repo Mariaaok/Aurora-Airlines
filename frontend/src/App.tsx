@@ -5,13 +5,17 @@ import LoginScreen from './pages/LoginPage';
 import CreateAccountScreen from './pages/CreateAccountPage';
 import AircraftsPage from './pages/AdminAircraftsPage'; 
 import EmployeesPage from './pages/EmployeesPage';
-import HomeScreen from './pages/HomePage';
 import AirportsPage from './pages/AirportsPage';
 import AdminAircraftTypesPage from './pages/AircraftTypesPage';
 import AdminFlightTypesPage from './pages/FlightTypesPage';
 import AdminFlightsPage from './pages/FlightsPage';
 import UserFlights from './pages/UserFlightsPage';
 import AdminReportsPage from './pages/AdminReportsPage';
+import FlightSearchPage from './pages/FlightSearchPage';
+import FlightResultsPage from './pages/FlightResultsPage';
+import FlightDetailsPage from './pages/FlightDetailsPage';
+import PassengerInfoPage from './pages/PassengerInfoPage';
+import CheckoutPage from './pages/CheckoutPage';
 
 function App() {
   return (
@@ -34,7 +38,15 @@ function App() {
 
       <Route path="/admin/reports" element={ <AdminReportsPage/> }/>
       
-      <Route path="/home" element={<HomeScreen/>} />
+      <Route path="/search-flights" element={<FlightSearchPage/>} />
+
+      <Route path="/flight-results" element={<FlightResultsPage/>} />
+
+      <Route path="/flight-details" element={<FlightDetailsPage/>} />
+
+      <Route path="/passenger-info" element={<PassengerInfoPage/>} />
+
+      <Route path="/checkout" element={<CheckoutPage/>} />
 
       <Route path="/my-flights" element={<UserFlights/>}/>
       

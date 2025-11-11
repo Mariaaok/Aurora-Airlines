@@ -1,0 +1,28 @@
+INSTRUCTIONS: How to Add Your Custom PDF Receipt
+=================================================
+
+1. Create or obtain a PDF file named "thanks-for-the-purchase.pdf"
+   
+2. Place it in this directory: frontend/public/
+
+3. The PDF will be automatically downloaded when users click 
+   "Download receipt" button on the Bank Slip payment page
+
+WHAT TO INCLUDE IN YOUR PDF:
+- Aurora Airlines branding/logo
+- Thank you message
+- Bank payment instructions
+- Bar code: 00000-09095-34343-19445
+- Bank name: MulberryPay Holdings
+- Validity period (e.g., "Valid for 3 days")
+- Contact information
+
+QUICK WAY TO CREATE THE PDF:
+- You can create it in Microsoft Word, Google Docs, or Canva
+- Design it as you wish with your company branding
+- Export/Save as PDF with the filename: thanks-for-the-purchase.pdf
+- Place it here in frontend/public/
+
+The file is currently missing, so you need to add it manually.
+When users select bank slip payment and click the download button,
+they will receive this PDF file.
